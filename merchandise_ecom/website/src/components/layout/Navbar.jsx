@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
-export default function Navbar({ cartCount, onOpenCart, onOpenSearch }) {
+export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -30,61 +31,64 @@ export default function Navbar({ cartCount, onOpenCart, onOpenSearch }) {
         <div className="flex justify-between items-center w-full px-6 md:px-16 max-w-[1440px] mx-auto">
           {/* Brand Logo */}
           <div className="flex-shrink-0">
-            <a
-              href="#"
+            <Link
+              href="/"
               className="font-display text-2xl md:text-3xl font-bold tracking-tighter text-primary hover:opacity-90 transition-opacity"
             >
               ORANGERED STUDIO
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-10">
-            <a
-              href="#collections"
+            <Link
+              href="/"
+              className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body text-xs tracking-[0.15em] uppercase"
+            >
+              Home
+            </Link>
+            <Link
+              href="/products"
               className="text-primary font-bold border-b-2 border-primary pb-1 font-body text-xs tracking-[0.15em] uppercase transition-opacity"
             >
               Collections
-            </a>
-            <a
-              href="#new-arrivals"
+            </Link>
+            <Link
+              href="/products?category=OUTERWEAR"
               className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body text-xs tracking-[0.15em] uppercase"
             >
-              New Arrivals
-            </a>
-            <a
-              href="#editorial"
-              className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body text-xs tracking-[0.15em] uppercase"
-            >
-              Archive
-            </a>
-            <a
-              href="#journal"
+              Outerwear
+            </Link>
+            <Link
+              href="/journal"
               className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body text-xs tracking-[0.15em] uppercase"
             >
               Journal
-            </a>
+            </Link>
           </div>
 
           {/* Action Icons */}
           <div className="flex items-center space-x-6 text-primary">
-            <button
-              onClick={onOpenSearch}
-              aria-label="Search"
-              className="material-symbols-outlined hover:opacity-70 transition-opacity cursor-pointer text-2xl"
-            >
-              search
-            </button>
-            <button
+            {onOpenSearch && (
+              <button
+                onClick={onOpenSearch}
+                aria-label="Search"
+                className="material-symbols-outlined hover:opacity-70 transition-opacity cursor-pointer text-2xl"
+              >
+                search
+              </button>
+            )}
+            <Link
+              href="/profile"
               aria-label="Account"
-              className="hidden sm:block material-symbols-outlined hover:opacity-70 transition-opacity cursor-pointer text-2xl"
+              className="hidden sm:flex items-center material-symbols-outlined hover:opacity-70 transition-opacity text-2xl"
             >
               person
-            </button>
-            <button
-              onClick={onOpenCart}
+            </Link>
+            <Link
+              href="/cart"
               aria-label="Shopping Bag"
-              className="relative material-symbols-outlined hover:opacity-70 transition-opacity cursor-pointer text-2xl"
+              className="relative flex items-center material-symbols-outlined hover:opacity-70 transition-opacity text-2xl"
             >
               shopping_bag
               {cartCount > 0 && (
@@ -92,7 +96,7 @@ export default function Navbar({ cartCount, onOpenCart, onOpenSearch }) {
                   {cartCount}
                 </span>
               )}
-            </button>
+            </Link>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -122,45 +126,45 @@ export default function Navbar({ cartCount, onOpenCart, onOpenSearch }) {
           </div>
 
           <div className="flex flex-col space-y-8 flex-grow">
-            <a
-              href="#collections"
+            <Link
+              href="/"
               onClick={() => setMobileMenuOpen(false)}
               className="text-primary-fixed font-bold font-display text-2xl hover:pl-4 transition-all duration-300"
             >
+              Home
+            </Link>
+            <Link
+              href="/products"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-white/80 font-display text-2xl hover:pl-4 hover:text-primary-fixed transition-all duration-300"
+            >
               Collections
-            </a>
-            <a
-              href="#new-arrivals"
+            </Link>
+            <Link
+              href="/cart"
               onClick={() => setMobileMenuOpen(false)}
               className="text-white/80 font-display text-2xl hover:pl-4 hover:text-primary-fixed transition-all duration-300"
             >
-              New Arrivals
-            </a>
-            <a
-              href="#editorial"
+              Shopping Bag
+            </Link>
+            <Link
+              href="/profile"
               onClick={() => setMobileMenuOpen(false)}
               className="text-white/80 font-display text-2xl hover:pl-4 hover:text-primary-fixed transition-all duration-300"
             >
-              Archive
-            </a>
-            <a
-              href="#journal"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-white/80 font-display text-2xl hover:pl-4 hover:text-primary-fixed transition-all duration-300"
-            >
-              Journal
-            </a>
+              Client Account
+            </Link>
           </div>
 
           <div className="mt-auto border-t border-white/15 pt-6 space-y-4">
-            <div className="flex items-center space-x-3 text-white/90">
+            <Link
+              href="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center space-x-3 text-white/90 hover:text-primary-fixed"
+            >
               <span className="material-symbols-outlined text-primary-fixed">person</span>
-              <span className="font-body text-xs tracking-widest uppercase">Client Account</span>
-            </div>
-            <div className="flex items-center space-x-3 text-white/90">
-              <span className="material-symbols-outlined text-primary-fixed">favorite</span>
-              <span className="font-body text-xs tracking-widest uppercase">Wishlist (0)</span>
-            </div>
+              <span className="font-body text-xs tracking-widest uppercase">Sign In / Register</span>
+            </Link>
             <p className="text-white/40 text-[11px] font-body tracking-wider pt-2">
               © ORANGERED STUDIO. ALL RIGHTS RESERVED.
             </p>

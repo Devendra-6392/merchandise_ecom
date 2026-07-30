@@ -1,14 +1,16 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-inverse-surface text-white border-t border-white/10 pt-20 pb-12 px-6 md:px-16">
       <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
         {/* Brand Column */}
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="font-display text-3xl font-bold tracking-tighter text-primary">
+          <Link href="/" className="font-display text-3xl font-bold tracking-tighter text-primary inline-block">
             ORANGERED STUDIO
-          </h2>
+          </Link>
           <p className="font-body text-xs text-white/70 font-light max-w-sm leading-relaxed">
             Minimalist Editorial with High-Contrast accents. Engineering monuments in luxury streetwear and architectural fashion curation.
           </p>
@@ -32,29 +34,29 @@ export default function Footer() {
           </h3>
           <ul className="space-y-3 font-body text-xs text-white/70">
             <li>
-              <a href="#collections" className="hover:text-white transition-colors">
-                Capsule Vol. 04
-              </a>
+              <Link href="/products" className="hover:text-white transition-colors">
+                All Archives
+              </Link>
             </li>
             <li>
-              <a href="#collections" className="hover:text-white transition-colors">
+              <Link href="/products?category=OUTERWEAR" className="hover:text-white transition-colors">
                 Outerwear Monoliths
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#collections" className="hover:text-white transition-colors">
+              <Link href="/products?category=PANTS" className="hover:text-white transition-colors">
                 Selvedge Denim
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#collections" className="hover:text-white transition-colors">
+              <Link href="/products?category=TOPS" className="hover:text-white transition-colors">
                 Heavyweight Tees
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#collections" className="hover:text-white transition-colors">
-                Archival Hardware
-              </a>
+              <Link href="/products?category=TAILORING" className="hover:text-white transition-colors">
+                Tailored Suits
+              </Link>
             </li>
           </ul>
         </div>
@@ -66,29 +68,29 @@ export default function Footer() {
           </h3>
           <ul className="space-y-3 font-body text-xs text-white/70">
             <li>
-              <a href="#" className="hover:text-white transition-colors">
-                Express Shipping Rates
-              </a>
+              <Link href="/profile" className="hover:text-white transition-colors">
+                Account Dashboard
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
-                Returns & Authenticity
-              </a>
+              <Link href="/orders/ORD-89241" className="hover:text-white transition-colors">
+                Order Tracking
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
-                Garment Care Guide
-              </a>
+              <Link href="/cart" className="hover:text-white transition-colors">
+                Shopping Bag
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
-                Serialized Tag Verification
-              </a>
+              <Link href="/login" className="hover:text-white transition-colors">
+                Client Login
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
-                Private Appointment
-              </a>
+              <Link href="/signup" className="hover:text-white transition-colors">
+                Private Registry
+              </Link>
             </li>
           </ul>
         </div>
