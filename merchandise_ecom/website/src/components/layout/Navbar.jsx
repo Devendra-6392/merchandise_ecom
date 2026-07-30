@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
+  const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -78,13 +80,23 @@ export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
                 search
               </button>
             )}
+            
             <Link
-              href="/profile"
+              href={isAuthenticated ? "/profile" : "/login"}
               aria-label="Account"
-              className="hidden sm:flex items-center material-symbols-outlined hover:opacity-70 transition-opacity text-2xl"
+              title={isAuthenticated ? `Logged in as ${user?.name}` : "Sign In"}
+              className="hidden sm:flex items-center gap-1.5 hover:opacity-70 transition-opacity"
             >
-              person
+              <span className="material-symbols-outlined text-2xl">
+                {isAuthenticated ? "account_circle" : "person"}
+              </span>
+              {isAuthenticated && (
+                <span className="font-body text-[11px] font-bold tracking-wider uppercase max-w-[100px] truncate hidden lg:inline">
+                  {user?.name?.split(" ")[0]}
+                </span>
+              )}
             </Link>
+
             <Link
               href="/cart"
               aria-label="Shopping Bag"
@@ -157,14 +169,38 @@ export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
           </div>
 
           <div className="mt-auto border-t border-white/15 pt-6 space-y-4">
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center space-x-3 text-white/90 hover:text-primary-fixed"
-            >
-              <span className="material-symbols-outlined text-primary-fixed">person</span>
-              <span className="font-body text-xs tracking-widest uppercase">Sign In / Register</span>
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex justify-between items-center">
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-3 text-white/90 hover:text-primary-fixed"
+                >
+                  <span className="material-symbols-outlined text-primary-fixed">account_circle</span>
+                  <span className="font-body text-xs tracking-widest uppercase font-bold">
+                    {user?.name}
+                  </span>
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-xs font-body text-white/50 hover:text-primary uppercase tracking-widest cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center space-x-3 text-white/90 hover:text-primary-fixed"
+              >
+                <span className="material-symbols-outlined text-primary-fixed">person</span>
+                <span className="font-body text-xs tracking-widest uppercase">Sign In / Register</span>
+              </Link>
+            )}
             <p className="text-white/40 text-[11px] font-body tracking-wider pt-2">
               © ORANGERED STUDIO. ALL RIGHTS RESERVED.
             </p>

@@ -5,9 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignupPage() {
   const router = useRouter();
+  const { signup, error: authError, clearError } = useAuth();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,13 +18,66 @@ export default function SignupPage() {
     confirmPassword: "",
   });
 
-  const handleSignup = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
+
+  const validateForm = () => {
+    setFormError("");
+    clearError();
+
+    if (!formData.name.trim()) {
+      setFormError("PLEASE ENTER YOUR FULL NAME.");
+      return false;
     }
-    router.push("/profile");
+
+    if (!formData.email.trim()) {
+      setFormError("PLEASE ENTER YOUR EMAIL ADDRESS.");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setFormError("PLEASE ENTER A VALID EMAIL ADDRESS.");
+      return false;
+    }
+
+    if (!formData.password) {
+      setFormError("PLEASE CREATE A PASSWORD.");
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      setFormError("PASSWORD MUST BE AT LEAST 6 CHARACTERS LONG.");
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setFormError("PASSWORDS DO NOT MATCH.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    const res = await signup(
+      formData.name.trim(),
+      formData.email.trim(),
+      formData.password
+    );
+    setIsSubmitting(false);
+
+    if (res.success) {
+      router.push("/profile");
+    } else {
+      setFormError(res.error || "REGISTRATION FAILED. PLEASE TRY AGAIN.");
+    }
   };
 
   return (
@@ -40,6 +96,25 @@ export default function SignupPage() {
             </p>
           </div>
 
+          {(formError || authError) && (
+            <div className="mb-6 bg-error/10 border border-error/40 p-4 text-xs font-body text-error flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-base shrink-0">error</span>
+                <span>{formError || authError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormError("");
+                  clearError();
+                }}
+                className="text-error font-bold text-sm leading-none cursor-pointer hover:opacity-70"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           <form onSubmit={handleSignup} className="space-y-5">
             <div>
               <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">
@@ -49,9 +124,12 @@ export default function SignupPage() {
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="DEVENDRA BHATT..."
-                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary uppercase"
+                onChange={(e) => {
+                  setFormData({ ...formData, name: e.target.value });
+                  if (formError) setFormError("");
+                }}
+                placeholder="E.G. DEVENDRA BHATT..."
+                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary uppercase text-on-surface placeholder:text-on-surface-variant/50"
               />
             </div>
 
@@ -63,9 +141,12 @@ export default function SignupPage() {
                 type="email"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, email: e.target.value });
+                  if (formError) setFormError("");
+                }}
                 placeholder="ENTER EMAIL ADDRESS..."
-                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary uppercase"
+                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary uppercase text-on-surface placeholder:text-on-surface-variant/50"
               />
             </div>
 
@@ -73,35 +154,69 @@ export default function SignupPage() {
               <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">
                 PASSWORD
               </label>
-              <input
-                type="password"
-                required
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="CREATE PASSWORD..."
-                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={formData.password}
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    if (formError) setFormError("");
+                  }}
+                  placeholder="MIN. 6 CHARACTERS..."
+                  className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 pr-10 text-xs font-body outline-none focus:border-primary text-on-surface"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary cursor-pointer material-symbols-outlined text-lg"
+                >
+                  {showPassword ? "visibility_off" : "visibility"}
+                </button>
+              </div>
             </div>
 
             <div>
               <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">
                 CONFIRM PASSWORD
               </label>
-              <input
-                type="password"
-                required
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                placeholder="CONFIRM PASSWORD..."
-                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary"
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  value={formData.confirmPassword}
+                  onChange={(e) => {
+                    setFormData({ ...formData, confirmPassword: e.target.value });
+                    if (formError) setFormError("");
+                  }}
+                  placeholder="CONFIRM YOUR PASSWORD..."
+                  className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 pr-10 text-xs font-body outline-none focus:border-primary text-on-surface"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary cursor-pointer material-symbols-outlined text-lg"
+                >
+                  {showConfirmPassword ? "visibility_off" : "visibility"}
+                </button>
+              </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all duration-300 horizontal-expansion cursor-pointer shadow-lg"
+              disabled={isSubmitting}
+              className={`w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-2 ${
+                isSubmitting ? "opacity-75 cursor-not-allowed" : "hover:bg-primary-container cursor-pointer"
+              }`}
             >
-              CREATE CLIENT ACCOUNT
+              {isSubmitting ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  <span>CREATING CLIENT ACCOUNT...</span>
+                </>
+              ) : (
+                "CREATE CLIENT ACCOUNT"
+              )}
             </button>
           </form>
 

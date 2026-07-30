@@ -7,6 +7,30 @@ const generateToken = (id) => {
   });
 };
 
+const sendTokenResponse = (user, statusCode, res) => {
+  const token = generateToken(user._id);
+
+  const options = {
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+  };
+
+  res.status(statusCode).cookie('token', token, options).json({
+    success: true,
+    token, // included for client backwards compatibility / API testing
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+      address: user.address
+    }
+  });
+};
+
 export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, role, phone, address } = req.body;
@@ -25,20 +49,7 @@ export const registerUser = async (req, res, next) => {
       address
     });
 
-    const token = generateToken(user._id);
-
-    res.status(201).json({
-      success: true,
-      token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        address: user.address
-      }
-    });
+    sendTokenResponse(user, 201, res);
   } catch (error) {
     next(error);
   }
@@ -53,19 +64,24 @@ export const loginUser = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
-    const token = generateToken(user._id);
+    sendTokenResponse(user, 200, res);
+  } catch (error) {
+    next(error);
+  }
+};
 
-    res.json({
+export const logoutUser = async (req, res, next) => {
+  try {
+    res.cookie('token', 'none', {
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
+    res.status(200).json({
       success: true,
-      token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        address: user.address
-      }
+      message: 'Successfully logged out'
     });
   } catch (error) {
     next(error);

@@ -1,4 +1,5 @@
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata = {
   title: "ORANGERED STUDIO | High-Fashion Merchandise & Luxury Lookbook",
@@ -34,8 +35,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="bg-background text-on-surface font-body selection:bg-primary selection:text-white min-h-screen flex flex-col">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
 }
+

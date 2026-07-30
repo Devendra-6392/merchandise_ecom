@@ -5,15 +5,54 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login, error: authError, clearError } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
-  const handleLogin = (e) => {
+  const validateForm = () => {
+    setFormError("");
+    clearError();
+
+    if (!email.trim()) {
+      setFormError("PLEASE ENTER YOUR EMAIL ADDRESS.");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setFormError("PLEASE ENTER A VALID EMAIL ADDRESS.");
+      return false;
+    }
+
+    if (!password) {
+      setFormError("PLEASE ENTER YOUR PASSWORD.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    router.push("/profile");
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    const res = await login(email.trim(), password);
+    setIsSubmitting(false);
+
+    if (res.success) {
+      router.push("/profile");
+    } else {
+      setFormError(res.error || "SIGN IN FAILED. PLEASE CHECK YOUR CREDENTIALS.");
+    }
   };
 
   return (
@@ -32,6 +71,25 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {(formError || authError) && (
+            <div className="mb-6 bg-error/10 border border-error/40 p-4 text-xs font-body text-error flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-base shrink-0">error</span>
+                <span>{formError || authError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormError("");
+                  clearError();
+                }}
+                className="text-error font-bold text-sm leading-none cursor-pointer hover:opacity-70"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">
@@ -41,9 +99,12 @@ export default function LoginPage() {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (formError) setFormError("");
+                }}
                 placeholder="ENTER EMAIL ADDRESS..."
-                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary uppercase"
+                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary uppercase text-on-surface placeholder:text-on-surface-variant/50"
               />
             </div>
 
@@ -56,21 +117,43 @@ export default function LoginPage() {
                   FORGOT PASSWORD?
                 </a>
               </div>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (formError) setFormError("");
+                  }}
+                  placeholder="••••••••••••"
+                  className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 pr-10 text-xs font-body outline-none focus:border-primary text-on-surface"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary cursor-pointer material-symbols-outlined text-lg"
+                >
+                  {showPassword ? "visibility_off" : "visibility"}
+                </button>
+              </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all duration-300 horizontal-expansion cursor-pointer shadow-lg"
+              disabled={isSubmitting}
+              className={`w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-2 ${
+                isSubmitting ? "opacity-75 cursor-not-allowed" : "hover:bg-primary-container cursor-pointer"
+              }`}
             >
-              SIGN IN TO ACCOUNT
+              {isSubmitting ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  <span>VERIFYING CREDENTIALS...</span>
+                </>
+              ) : (
+                "SIGN IN TO ACCOUNT"
+              )}
             </button>
           </form>
 
