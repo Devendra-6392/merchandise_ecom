@@ -7,14 +7,17 @@ import Footer from "@/components/layout/Footer";
 import ProductQuickViewModal from "@/components/modals/ProductQuickViewModal";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { PRODUCTS } from "@/components/home/CollectionsGrid";
+import { useCartStore } from "@/store/useCartStore";
 
 export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [sortBy, setSortBy] = useState("DEFAULT");
   const [searchQuery, setSearchQuery] = useState("");
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [cart, setCart] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const isCartOpen = useCartStore((state) => state.isCartOpen);
+  const setCartOpen = useCartStore((state) => state.setCartOpen);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const categories = ["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"];
 
@@ -45,25 +48,12 @@ export default function ProductsPage() {
   }, [selectedCategory, sortBy, searchQuery]);
 
   const handleAddToCart = (product, size = "M") => {
-    setCart((prev) => {
-      const idx = prev.findIndex((item) => item.product.id === product.id && item.size === size);
-      if (idx > -1) {
-        const copy = [...prev];
-        copy[idx].quantity += 1;
-        return copy;
-      }
-      return [...prev, { product, size, quantity: 1 }];
-    });
-    setIsCartOpen(true);
-  };
-
-  const handleRemoveFromCart = (index) => {
-    setCart((prev) => prev.filter((_, i) => i !== index));
+    addToCart({ product, size, quantity: 1 });
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">
-      <Navbar cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} onOpenCart={() => setIsCartOpen(true)} />
+      <Navbar />
 
       {/* Hero Header */}
       <section className="bg-inverse-surface text-white py-16 px-6 md:px-16 border-b border-white/10">
@@ -180,21 +170,30 @@ export default function ProductsPage() {
                   className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:scale-105 transition-transform duration-700"
                 />
 
-                {/* Quick View & Add Buttons */}
-                <div className="absolute inset-0 bg-inverse-surface/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-6 gap-3">
+                {/* Quick Actions Buttons */}
+                <div className="absolute inset-0 bg-inverse-surface/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 gap-3">
                   <Link
-                    href={`/products/${product.id}`}
-                    className="bg-white text-on-surface px-6 py-3 font-body text-xs font-bold tracking-[0.15em] uppercase hover:bg-primary hover:text-white transition-colors cursor-pointer shadow-md"
+                    href={`/products/${product.id}/customize`}
+                    className="w-full max-w-[200px] text-center bg-primary text-white py-3 px-4 font-body text-xs font-bold tracking-[0.15em] uppercase hover:bg-primary-container transition-colors cursor-pointer shadow-md"
                   >
-                    VIEW PRODUCT
+                    🎨 CUSTOMIZE DESIGN
                   </Link>
-                  <button
-                    onClick={() => setQuickViewProduct(product)}
-                    className="bg-primary text-white p-3 hover:bg-primary-container transition-colors cursor-pointer shadow-md"
-                    aria-label="Quick View"
-                  >
-                    <span className="material-symbols-outlined text-xl">visibility</span>
-                  </button>
+
+                  <div className="flex gap-2 w-full max-w-[200px]">
+                    <Link
+                      href={`/products/${product.id}`}
+                      className="flex-grow text-center bg-white text-on-surface py-2.5 px-3 font-body text-[11px] font-bold tracking-wider uppercase hover:bg-primary hover:text-white transition-colors cursor-pointer shadow-md"
+                    >
+                      VIEW SPEC
+                    </Link>
+                    <button
+                      onClick={() => setQuickViewProduct(product)}
+                      className="bg-primary text-white p-2.5 hover:bg-primary-container transition-colors cursor-pointer shadow-md"
+                      aria-label="Quick View"
+                    >
+                      <span className="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -215,12 +214,20 @@ export default function ProductsPage() {
                   <span className="font-body font-bold text-base text-on-surface">
                     ${product.price} USD
                   </span>
-                  <button
-                    onClick={() => handleAddToCart(product, "M")}
-                    className="font-body text-xs font-bold text-primary hover:underline tracking-wider uppercase"
-                  >
-                    ADD TO BAG +
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/products/${product.id}/customize`}
+                      className="font-body text-xs font-bold text-primary hover:underline tracking-wider uppercase"
+                    >
+                      CUSTOMIZE 🎨
+                    </Link>
+                    <button
+                      onClick={() => handleAddToCart(product, "M")}
+                      className="font-body text-xs font-bold text-on-surface-variant hover:text-primary tracking-wider uppercase"
+                    >
+                      + ADD
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -236,12 +243,7 @@ export default function ProductsPage() {
         onAddToCartWithSize={handleAddToCart}
       />
 
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={cart}
-        onRemoveItem={handleRemoveFromCart}
-      />
+      <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }

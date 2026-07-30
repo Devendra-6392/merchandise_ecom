@@ -5,16 +5,32 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { PRODUCTS } from "@/components/home/CollectionsGrid";
+import { useCartStore } from "@/store/useCartStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useOrderStore } from "@/store/useOrderStore";
 
 export default function CheckoutPage() {
   const router = useRouter();
+
+  const user = useAuthStore((state) => state.user);
+  const items = useCartStore((state) => state.items);
+  const clearCart = useCartStore((state) => state.clearCart);
+
+  const getSubtotal = useCartStore((state) => state.getSubtotal);
+  const getDiscountAmount = useCartStore((state) => state.getDiscountAmount);
+  const getShippingCharge = useCartStore((state) => state.getShippingCharge);
+  const getGrandTotal = useCartStore((state) => state.getGrandTotal);
+
+  const createOrder = useOrderStore((state) => state.createOrder);
+
   const [paymentMethod, setPaymentMethod] = useState("CARD");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
-    firstName: "Devendra",
-    lastName: "Bhatt",
-    email: "devendra@example.com",
-    address: "Via Montenapoleone 18",
+    firstName: user?.name ? user.name.split(" ")[0] : "DEVENDRA",
+    lastName: user?.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : "BHATT",
+    email: user?.email || "devendra@example.com",
+    address: user?.address || "Via Montenapoleone 18",
     city: "Milan",
     country: "Italy",
     zip: "20121",
@@ -23,19 +39,82 @@ export default function CheckoutPage() {
     cvv: "888",
   });
 
-  const cartSummary = [
-    { product: PRODUCTS[0], size: "L", quantity: 1 },
-    { product: PRODUCTS[2], size: "32", quantity: 1 },
-  ];
+  const subtotal = getSubtotal();
+  const discountAmount = getDiscountAmount();
+  const shipping = getShippingCharge();
+  const grandTotal = getGrandTotal();
 
-  const subtotal = cartSummary.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const shipping = 25;
-  const total = subtotal + shipping;
-
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    router.push("/orders/ORD-89241");
+    if (items.length === 0) {
+      alert("Your shopping bag is empty!");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const orderData = {
+      shippingAddress: {
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        phone: user?.phone || "+1 (555) 019-2834",
+        street: formData.address,
+        city: formData.city,
+        country: formData.country,
+        pincode: formData.zip,
+      },
+      items: items.map((i) => ({
+        productName: i.product?.name || "Garment",
+        quantity: i.quantity,
+        selectedSize: i.size,
+        selectedColor: i.color,
+        selectedPrintType: i.printType,
+        printLocation: i.printLocation,
+        artworkUrl: i.artworkUrl,
+        unitPrice: i.unitPrice,
+        totalItemPrice: i.totalItemPrice,
+      })),
+      billingSummary: {
+        subtotal: subtotal,
+        discountAmount: discountAmount,
+        shippingCharge: shipping,
+        grandTotal: grandTotal,
+      },
+    };
+
+    const res = await createOrder(orderData);
+    setIsSubmitting(false);
+
+    if (res.success && res.order) {
+      clearCart();
+      router.push(`/orders/${res.order.orderNumber}`);
+    } else {
+      alert("Failed to create order. Please try again.");
+    }
   };
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col bg-surface text-on-surface">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center py-24 text-center px-6">
+          <div className="space-y-6 max-w-md">
+            <span className="material-symbols-outlined text-6xl text-outline">shopping_bag</span>
+            <h1 className="font-display text-3xl font-bold">YOUR BAG IS EMPTY</h1>
+            <p className="font-body text-xs text-on-surface-variant uppercase">
+              ADD MERCHANDISE PIECES BEFORE PROCEEDING TO EXPRESS CHECKOUT.
+            </p>
+            <Link
+              href="/products"
+              className="inline-block bg-primary text-white px-8 py-4 font-body text-xs font-bold tracking-widest uppercase hover:bg-primary-container transition-all"
+            >
+              BROWSE CATALOG
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">
@@ -171,21 +250,21 @@ export default function CheckoutPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod("APPLE_PAY")}
+                  onClick={() => setPaymentMethod("UPI")}
                   className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "APPLE_PAY" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
+                    paymentMethod === "UPI" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
                   }`}
                 >
-                  APPLE PAY
+                  UPI / NETBANKING
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod("PAYPAL")}
+                  onClick={() => setPaymentMethod("RAZORPAY")}
                   className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "PAYPAL" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
+                    paymentMethod === "RAZORPAY" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
                   }`}
                 >
-                  PAYPAL
+                  RAZORPAY
                 </button>
               </div>
 
@@ -231,18 +310,26 @@ export default function CheckoutPage() {
           {/* Right Column: Order Summary Card */}
           <div className="lg:col-span-5 bg-surface-container-low p-6 md:p-8 border border-outline-variant/40 space-y-6">
             <h2 className="font-display text-xl font-bold text-on-surface border-b border-outline-variant/30 pb-4">
-              ORDER SUMMARY
+              ORDER SUMMARY ({items.length})
             </h2>
 
             {/* Selected Items */}
-            <div className="space-y-4">
-              {cartSummary.map((item, idx) => (
-                <div key={idx} className="flex gap-4 items-center">
-                  <img src={item.product.image} alt={item.product.name} className="w-16 h-20 object-cover bg-surface-container shrink-0" />
+            <div className="space-y-4 max-h-80 overflow-y-auto pr-1">
+              {items.map((item) => (
+                <div key={item.id} className="flex gap-4 items-center border-b border-outline-variant/15 pb-3">
+                  <div className="relative w-16 h-20 bg-surface-container shrink-0 overflow-hidden border border-outline-variant/30">
+                    <img src={item.product?.image} alt={item.product?.name} className="w-full h-full object-cover" />
+                    {item.artworkUrl && (
+                      <img src={item.artworkUrl} alt="Logo" className="absolute inset-0 m-auto max-h-10 w-auto object-contain drop-shadow-sm" />
+                    )}
+                  </div>
                   <div className="flex-grow">
-                    <h3 className="font-display text-xs font-bold text-on-surface line-clamp-1">{item.product.name}</h3>
-                    <p className="font-body text-[11px] text-on-surface-variant mt-1">SIZE: {item.size} | QTY: {item.quantity}</p>
-                    <span className="font-body font-bold text-xs text-primary">${item.product.price * item.quantity} USD</span>
+                    <h3 className="font-display text-xs font-bold text-on-surface line-clamp-1">{item.product?.name}</h3>
+                    <p className="font-body text-[11px] text-on-surface-variant mt-0.5">SIZE: {item.size} | COLOR: {item.color}</p>
+                    {item.printType !== "Standard" && (
+                      <p className="font-body text-[10px] text-primary font-bold">{item.printType} ({item.printLocation})</p>
+                    )}
+                    <span className="font-body font-bold text-xs text-primary">${item.totalItemPrice} USD</span>
                   </div>
                 </div>
               ))}
@@ -254,21 +341,40 @@ export default function CheckoutPage() {
                 <span>SUBTOTAL</span>
                 <span className="font-bold text-on-surface">${subtotal} USD</span>
               </div>
+
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-primary font-bold">
+                  <span>DISCOUNT</span>
+                  <span>-${discountAmount.toFixed(2)} USD</span>
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <span>EXPRESS DISPATCH</span>
                 <span className="font-bold text-on-surface">${shipping} USD</span>
               </div>
+
               <div className="flex justify-between pt-2 border-t border-outline-variant/20 font-bold text-base text-on-surface">
                 <span>TOTAL DUE</span>
-                <span className="text-primary font-display text-xl">${total} USD</span>
+                <span className="text-primary font-display text-xl">${grandTotal.toFixed(2)} USD</span>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all duration-300 horizontal-expansion shadow-lg cursor-pointer"
+              disabled={isSubmitting}
+              className={`w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 shadow-lg cursor-pointer flex items-center justify-center gap-2 ${
+                isSubmitting ? "opacity-75 cursor-not-allowed" : "hover:bg-primary-container"
+              }`}
             >
-              CONFIRM & PAY (${total} USD)
+              {isSubmitting ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  <span>AUTHORIZING TRANSACTION...</span>
+                </>
+              ) : (
+                `CONFIRM & PAY ($${grandTotal.toFixed(2)} USD)`
+              )}
             </button>
           </div>
         </form>

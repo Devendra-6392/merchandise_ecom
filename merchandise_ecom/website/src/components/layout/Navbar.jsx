@@ -2,10 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
 
-export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
-  const { user, isAuthenticated, logout } = useAuth();
+export default function Navbar({ onOpenSearch }) {
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const totalCartCount = useCartStore((state) => state.getTotalCount());
+  const toggleCart = useCartStore((state) => state.toggleCart);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -51,21 +55,21 @@ export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
             </Link>
             <Link
               href="/products"
-              className="text-primary font-bold border-b-2 border-primary pb-1 font-body text-xs tracking-[0.15em] uppercase transition-opacity"
+              className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body text-xs tracking-[0.15em] uppercase"
             >
               Collections
             </Link>
             <Link
-              href="/products?category=OUTERWEAR"
+              href="/orders"
               className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body text-xs tracking-[0.15em] uppercase"
             >
-              Outerwear
+              Orders
             </Link>
             <Link
-              href="/journal"
+              href="/profile"
               className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body text-xs tracking-[0.15em] uppercase"
             >
-              Journal
+              Account
             </Link>
           </div>
 
@@ -80,7 +84,7 @@ export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
                 search
               </button>
             )}
-            
+
             <Link
               href={isAuthenticated ? "/profile" : "/login"}
               aria-label="Account"
@@ -97,18 +101,18 @@ export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
               )}
             </Link>
 
-            <Link
-              href="/cart"
+            <button
+              onClick={toggleCart}
               aria-label="Shopping Bag"
-              className="relative flex items-center material-symbols-outlined hover:opacity-70 transition-opacity text-2xl"
+              className="relative flex items-center material-symbols-outlined hover:opacity-70 transition-opacity text-2xl cursor-pointer"
             >
               shopping_bag
-              {cartCount > 0 && (
+              {totalCartCount > 0 && (
                 <span className="absolute -top-1.5 -right-2 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                  {cartCount}
+                  {totalCartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -151,6 +155,13 @@ export default function Navbar({ cartCount = 0, onOpenCart, onOpenSearch }) {
               className="text-white/80 font-display text-2xl hover:pl-4 hover:text-primary-fixed transition-all duration-300"
             >
               Collections
+            </Link>
+            <Link
+              href="/orders"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-white/80 font-display text-2xl hover:pl-4 hover:text-primary-fixed transition-all duration-300"
+            >
+              My Orders & Tracking
             </Link>
             <Link
               href="/cart"

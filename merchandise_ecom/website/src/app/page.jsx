@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
-import CollectionsGrid, { PRODUCTS } from "@/components/home/CollectionsGrid";
+import CollectionsGrid from "@/components/home/CollectionsGrid";
 import EditorialSection from "@/components/home/EditorialSection";
 import JournalSection from "@/components/home/JournalSection";
 import Newsletter from "@/components/home/Newsletter";
@@ -11,39 +11,19 @@ import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import ProductQuickViewModal from "@/components/modals/ProductQuickViewModal";
 import SearchModal from "@/components/modals/SearchModal";
+import { useCartStore } from "@/store/useCartStore";
 
 export default function Home() {
-  const [cart, setCart] = useState([
-    {
-      product: PRODUCTS[0],
-      size: "L",
-      quantity: 1,
-    },
-  ]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const isCartOpen = useCartStore((state) => state.isCartOpen);
+  const setCartOpen = useCartStore((state) => state.setCartOpen);
+  const addToCart = useCartStore((state) => state.addToCart);
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   const handleAddToCart = (product, size = "M") => {
-    setCart((prev) => {
-      const existingIdx = prev.findIndex(
-        (item) => item.product.id === product.id && item.size === size
-      );
-      if (existingIdx > -1) {
-        const updated = [...prev];
-        updated[existingIdx].quantity += 1;
-        return updated;
-      }
-      return [...prev, { product, size, quantity: 1 }];
-    });
-    setIsCartOpen(true);
+    addToCart({ product, size, quantity: 1 });
   };
-
-  const handleRemoveFromCart = (index) => {
-    setCart((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const totalCartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const scrollToCollections = () => {
     const el = document.getElementById("collections");
@@ -60,11 +40,7 @@ export default function Home() {
       </div>
 
       {/* Glassmorphic Navbar */}
-      <Navbar
-        cartCount={totalCartCount}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenSearch={() => setIsSearchOpen(true)}
-      />
+      <Navbar onOpenSearch={() => setIsSearchOpen(true)} />
 
       {/* Main Content Sections */}
       <main className="flex-grow">
@@ -91,12 +67,7 @@ export default function Home() {
       <Footer />
 
       {/* Modals & Overlays */}
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={cart}
-        onRemoveItem={handleRemoveFromCart}
-      />
+      <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
 
       <ProductQuickViewModal
         product={quickViewProduct}

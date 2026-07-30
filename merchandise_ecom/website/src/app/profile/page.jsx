@@ -1,43 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { PRODUCTS } from "@/components/home/CollectionsGrid";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useOrderStore } from "@/store/useOrderStore";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, isAuthenticated, logout, loading } = useAuth();
+  const { user, isAuthenticated, logout, loading: authLoading } = useAuthStore();
+  const { orders, fetchMyOrders } = useOrderStore();
+
   const [activeTab, setActiveTab] = useState("ORDERS");
 
-  const orders = [
-    {
-      id: "ORD-89241",
-      date: "JULY 30, 2026",
-      status: "IN DISPATCH (DHL)",
-      total: 620,
-      items: [PRODUCTS[1]],
-      trackingUrl: "/orders/ORD-89241",
-    },
-    {
-      id: "ORD-77192",
-      date: "JULY 15, 2026",
-      status: "DELIVERED",
-      total: 280,
-      items: [PRODUCTS[0]],
-      trackingUrl: "/orders/ORD-77192",
-    },
-  ];
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchMyOrders();
+    }
+  }, [isAuthenticated, fetchMyOrders]);
 
   const handleSignOut = () => {
     logout();
     router.push("/login");
   };
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-surface text-on-surface">
         <Navbar />
@@ -45,7 +34,7 @@ export default function ProfilePage() {
           <div className="flex flex-col items-center gap-4">
             <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
             <span className="font-body text-xs font-bold tracking-widest text-on-surface-variant uppercase">
-              AUTHENTICATING SESSION...
+              AUTHENTICATING CLIENT SESSION...
             </span>
           </div>
         </main>
@@ -164,47 +153,79 @@ export default function ProfilePage() {
         {/* Tab 1: Orders List */}
         {activeTab === "ORDERS" && (
           <div className="space-y-6">
-            {orders.map((order) => (
-              <div
-                key={order.id}
-                className="bg-surface-container-lowest p-6 border border-outline-variant/30 hover:border-primary transition-colors space-y-4"
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-outline-variant/20 pb-4">
-                  <div>
-                    <span className="font-display font-bold text-lg text-on-surface">{order.id}</span>
-                    <span className="font-body text-xs text-on-surface-variant block mt-1">PLACED ON {order.date}</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="bg-primary/10 text-primary px-3 py-1 font-body text-xs font-bold uppercase tracking-wider">
-                      {order.status}
-                    </span>
-                    <span className="font-body font-bold text-base text-on-surface">${order.total} USD</span>
-                  </div>
-                </div>
-
-                {/* Items in order */}
-                <div className="flex flex-wrap gap-4 pt-2">
-                  {order.items.map((product) => (
-                    <div key={product.id} className="flex gap-4 items-center">
-                      <img src={product.image} alt={product.name} className="w-16 h-20 object-cover bg-surface-container shrink-0" />
-                      <div>
-                        <h4 className="font-display text-sm font-bold text-on-surface">{product.name}</h4>
-                        <span className="font-body text-xs text-on-surface-variant">${product.price} USD</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-4 border-t border-outline-variant/15 flex justify-end">
-                  <Link
-                    href={order.trackingUrl}
-                    className="bg-primary text-white px-6 py-3 font-body text-xs font-bold tracking-[0.15em] uppercase hover:bg-primary-container transition-all cursor-pointer"
-                  >
-                    TRACK SHIPMENT LIVE →
-                  </Link>
-                </div>
+            {orders.length === 0 ? (
+              <div className="py-16 text-center border border-outline-variant/30 bg-surface-container-lowest space-y-4">
+                <span className="material-symbols-outlined text-5xl text-outline">local_shipping</span>
+                <h3 className="font-display text-xl font-bold">NO ORDERS RECORDED YET</h3>
+                <p className="font-body text-xs text-on-surface-variant uppercase">
+                  YOUR COMPLETED ORDERS AND CUSTOM MERCHANDISE DISPATCHES WILL APPEAR HERE.
+                </p>
+                <Link
+                  href="/products"
+                  className="inline-block bg-primary text-white px-6 py-3 font-body text-xs font-bold tracking-widest uppercase hover:bg-primary-container"
+                >
+                  EXPLORE COLLECTIONS
+                </Link>
               </div>
-            ))}
+            ) : (
+              orders.map((order) => (
+                <div
+                  key={order._id || order.orderNumber}
+                  className="bg-surface-container-lowest p-6 border border-outline-variant/30 hover:border-primary transition-colors space-y-4"
+                >
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-outline-variant/20 pb-4">
+                    <div>
+                      <span className="font-display font-bold text-lg text-on-surface">{order.orderNumber}</span>
+                      <span className="font-body text-xs text-on-surface-variant block mt-1">
+                        PLACED ON {new Date(order.createdAt || Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="bg-primary/10 text-primary px-3 py-1 font-body text-xs font-bold uppercase tracking-wider">
+                        {order.currentStatus}
+                      </span>
+                      <span className="font-body font-bold text-base text-on-surface">
+                        ${order.billingSummary?.grandTotal || 0} USD
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Items in order */}
+                  <div className="flex flex-wrap gap-4 pt-2">
+                    {order.items?.map((item, idx) => (
+                      <div key={idx} className="flex gap-4 items-center bg-surface-container-low p-3 border border-outline-variant/20">
+                        {item.artworkUrl && (
+                          <img src={item.artworkUrl} alt="Logo" className="w-12 h-14 object-contain bg-white p-1" />
+                        )}
+                        <div>
+                          <h4 className="font-display text-sm font-bold text-on-surface">{item.productName}</h4>
+                          <span className="font-body text-xs text-on-surface-variant">
+                            SIZE: {item.selectedSize} | QTY: {item.quantity} | ${item.unitPrice} USD
+                          </span>
+                          {item.selectedPrintType && item.selectedPrintType !== "Standard" && (
+                            <span className="font-body text-[10px] text-primary font-bold block">
+                              TECHNIQUE: {item.selectedPrintType} ({item.printLocation})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-4 border-t border-outline-variant/15 flex justify-between items-center">
+                    <span className="font-body text-xs text-on-surface-variant uppercase">
+                      COURIER: {order.shippingDetails?.courierName || "DHL EXPRESS"} ({order.shippingDetails?.trackingNumber || "PENDING"})
+                    </span>
+                    <Link
+                      href={`/orders/${order.orderNumber}`}
+                      className="bg-primary text-white px-6 py-3 font-body text-xs font-bold tracking-[0.15em] uppercase hover:bg-primary-container transition-all cursor-pointer"
+                    >
+                      TRACK SHIPMENT LIVE →
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
 
@@ -215,7 +236,7 @@ export default function ProfilePage() {
               <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest inline-block">
                 PRIMARY DISPATCH ADDRESS
               </span>
-              <h3 className="font-display text-lg font-bold text-on-surface">{(user?.name || "Devendra Bhatt").toUpperCase()}</h3>
+              <h3 className="font-display text-lg font-bold text-on-surface">{(user?.name || "DEVENDRA BHATT").toUpperCase()}</h3>
               <p className="font-body text-xs text-on-surface-variant leading-relaxed">
                 {user?.address || "Via Montenapoleone 18, Milan, 20121, Italy"}
               </p>

@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { PRODUCTS } from "@/components/home/CollectionsGrid";
+import { useCartStore } from "@/store/useCartStore";
 
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -16,11 +17,13 @@ export default function ProductDetailPage({ params }) {
   const product = PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
 
   const [selectedImage, setSelectedImage] = useState(product.image);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0] || "M");
+  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || "M");
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("SPECS");
-  const [cart, setCart] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const isCartOpen = useCartStore((state) => state.isCartOpen);
+  const setCartOpen = useCartStore((state) => state.setCartOpen);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const images = [
     product.image,
@@ -30,16 +33,11 @@ export default function ProductDetailPage({ params }) {
   ];
 
   const handleAddToCart = () => {
-    setCart((prev) => {
-      const idx = prev.findIndex((item) => item.product.id === product.id && item.size === selectedSize);
-      if (idx > -1) {
-        const copy = [...prev];
-        copy[idx].quantity += quantity;
-        return copy;
-      }
-      return [...prev, { product, size: selectedSize, quantity }];
+    addToCart({
+      product,
+      size: selectedSize,
+      quantity,
     });
-    setIsCartOpen(true);
   };
 
   const handleBuyNow = () => {
@@ -47,15 +45,11 @@ export default function ProductDetailPage({ params }) {
     router.push("/checkout");
   };
 
-  const handleRemoveFromCart = (index) => {
-    setCart((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const relatedProducts = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 3);
 
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">
-      <Navbar cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} onOpenCart={() => setIsCartOpen(true)} />
+      <Navbar />
 
       {/* Breadcrumb Navigation */}
       <div className="py-4 px-6 md:px-16 border-b border-outline-variant/20 max-w-[1440px] mx-auto w-full">
@@ -124,6 +118,27 @@ export default function ProductDetailPage({ params }) {
               {product.description}
             </p>
 
+            {/* CUSTOMIZER CALLOUT BANNER */}
+            <div className="bg-primary/10 border border-primary/30 p-5 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-sm font-bold text-primary tracking-wider uppercase">
+                  🎨 ATELIER CUSTOMIZER STUDIO
+                </span>
+                <span className="text-[10px] font-body font-bold bg-primary text-white px-2 py-0.5 uppercase">
+                  NEW
+                </span>
+              </div>
+              <p className="text-xs font-body text-on-surface-variant leading-relaxed">
+                Add your custom vector logo, graphic, or typography. Select print techniques (DTF, Screen Printing, Embroidery) & placement locations.
+              </p>
+              <Link
+                href={`/products/${product.id}/customize`}
+                className="inline-block bg-primary text-white px-6 py-2.5 font-body text-xs font-bold tracking-[0.15em] uppercase hover:bg-primary-container transition-all cursor-pointer shadow-md mt-2"
+              >
+                OPEN MERCH CUSTOMIZER →
+              </Link>
+            </div>
+
             {/* Size Selector */}
             <div className="border-t border-outline-variant/30 pt-6">
               <div className="flex justify-between items-center mb-3">
@@ -188,7 +203,7 @@ export default function ProductDetailPage({ params }) {
                 onClick={handleBuyNow}
                 className="w-full bg-inverse-surface text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-all cursor-pointer"
               >
-                BUY IT NOW
+                BUY IT NOW & CHECKOUT
               </button>
             </div>
 
@@ -277,12 +292,7 @@ export default function ProductDetailPage({ params }) {
 
       <Footer />
 
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={cart}
-        onRemoveItem={handleRemoveFromCart}
-      />
+      <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }

@@ -5,21 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthStore } from "@/store/useAuthStore";
 
-export default function SignupPage() {
+export default function SignUpPage() {
   const router = useRouter();
-  const { signup, error: authError, clearError } = useAuth();
+  const signup = useAuthStore((state) => state.signup);
+  const authError = useAuthStore((state) => state.error);
+  const clearError = useAuthStore((state) => state.clearError);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -27,33 +25,28 @@ export default function SignupPage() {
     setFormError("");
     clearError();
 
-    if (!formData.name.trim()) {
+    if (!name.trim()) {
       setFormError("PLEASE ENTER YOUR FULL NAME.");
       return false;
     }
 
-    if (!formData.email.trim()) {
+    if (!email.trim()) {
       setFormError("PLEASE ENTER YOUR EMAIL ADDRESS.");
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email.trim())) {
+    if (!emailRegex.test(email.trim())) {
       setFormError("PLEASE ENTER A VALID EMAIL ADDRESS.");
       return false;
     }
 
-    if (!formData.password) {
-      setFormError("PLEASE CREATE A PASSWORD.");
-      return false;
-    }
-
-    if (formData.password.length < 6) {
+    if (!password || password.length < 6) {
       setFormError("PASSWORD MUST BE AT LEAST 6 CHARACTERS LONG.");
       return false;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (password !== confirmPassword) {
       setFormError("PASSWORDS DO NOT MATCH.");
       return false;
     }
@@ -61,16 +54,12 @@ export default function SignupPage() {
     return true;
   };
 
-  const handleSignup = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    const res = await signup(
-      formData.name.trim(),
-      formData.email.trim(),
-      formData.password
-    );
+    const res = await signup(name.trim(), email.trim(), password);
     setIsSubmitting(false);
 
     if (res.success) {
@@ -88,11 +77,11 @@ export default function SignupPage() {
         <div className="w-full max-w-md bg-surface-container-lowest p-8 md:p-10 border border-outline-variant/40 shadow-2xl">
           <div className="text-center mb-8">
             <span className="font-body text-xs font-bold tracking-[0.25em] text-primary uppercase block mb-2">
-              ORANGERED MEMBERSHIP
+              CLIENT REGISTRATION
             </span>
-            <h1 className="font-display text-3xl font-bold text-on-surface">JOIN PRIVATE REGISTRY</h1>
+            <h1 className="font-display text-3xl font-bold text-on-surface">JOIN ATELIER REGISTRY</h1>
             <p className="font-body text-xs text-on-surface-variant font-light mt-2">
-              ENJOY PRIORITY ACCESS TO LIMITED RUN CAPSULES & PRIVATE SHOWINGS.
+              CREATE YOUR CLIENT ACCOUNT FOR DISPATCH TRACKING & CUSTOM MERCHANDISE.
             </p>
           </div>
 
@@ -115,7 +104,7 @@ export default function SignupPage() {
             </div>
           )}
 
-          <form onSubmit={handleSignup} className="space-y-5">
+          <form onSubmit={handleSignUp} className="space-y-5">
             <div>
               <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">
                 FULL NAME
@@ -123,12 +112,12 @@ export default function SignupPage() {
               <input
                 type="text"
                 required
-                value={formData.name}
+                value={name}
                 onChange={(e) => {
-                  setFormData({ ...formData, name: e.target.value });
+                  setName(e.target.value);
                   if (formError) setFormError("");
                 }}
-                placeholder="E.G. DEVENDRA BHATT..."
+                placeholder="ENTER YOUR FULL NAME..."
                 className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary uppercase text-on-surface placeholder:text-on-surface-variant/50"
               />
             </div>
@@ -140,9 +129,9 @@ export default function SignupPage() {
               <input
                 type="email"
                 required
-                value={formData.email}
+                value={email}
                 onChange={(e) => {
-                  setFormData({ ...formData, email: e.target.value });
+                  setEmail(e.target.value);
                   if (formError) setFormError("");
                 }}
                 placeholder="ENTER EMAIL ADDRESS..."
@@ -158,12 +147,12 @@ export default function SignupPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  value={formData.password}
+                  value={password}
                   onChange={(e) => {
-                    setFormData({ ...formData, password: e.target.value });
+                    setPassword(e.target.value);
                     if (formError) setFormError("");
                   }}
-                  placeholder="MIN. 6 CHARACTERS..."
+                  placeholder="••••••••••••"
                   className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 pr-10 text-xs font-body outline-none focus:border-primary text-on-surface"
                 />
                 <button
@@ -180,26 +169,17 @@ export default function SignupPage() {
               <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">
                 CONFIRM PASSWORD
               </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  required
-                  value={formData.confirmPassword}
-                  onChange={(e) => {
-                    setFormData({ ...formData, confirmPassword: e.target.value });
-                    if (formError) setFormError("");
-                  }}
-                  placeholder="CONFIRM YOUR PASSWORD..."
-                  className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 pr-10 text-xs font-body outline-none focus:border-primary text-on-surface"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary cursor-pointer material-symbols-outlined text-lg"
-                >
-                  {showConfirmPassword ? "visibility_off" : "visibility"}
-                </button>
-              </div>
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (formError) setFormError("");
+                }}
+                placeholder="••••••••••••"
+                className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary text-on-surface"
+              />
             </div>
 
             <button
@@ -212,7 +192,7 @@ export default function SignupPage() {
               {isSubmitting ? (
                 <>
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                  <span>CREATING CLIENT ACCOUNT...</span>
+                  <span>CREATING REGISTRY ACCOUNT...</span>
                 </>
               ) : (
                 "CREATE CLIENT ACCOUNT"
