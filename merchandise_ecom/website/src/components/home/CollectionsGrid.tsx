@@ -1,0 +1,214 @@
+"use client";
+
+import { useState } from "react";
+
+export interface Product {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  hoverImage: string;
+  badge?: string;
+  description: string;
+  sizes: string[];
+  specs: string[];
+}
+
+export const PRODUCTS: Product[] = [
+  {
+    id: "p1",
+    name: "ORANGERED OVERSIZED MONOLITH HOODIE",
+    category: "Outerwear",
+    price: 280,
+    image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=1000&q=85",
+    hoverImage: "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&w=1000&q=85",
+    badge: "LIMITED / 50 PCS",
+    description: "Architectural boxy hoodie crafted from 500 GSM custom-knit French Terry cotton. Features distressed double-layer hood and minimal Orangered tonal embroidery.",
+    sizes: ["S", "M", "L", "XL"],
+    specs: ["100% Organic French Terry Cotton", "Made in Milan, Italy", "Custom Matte Black Hardware", "Preshrunk Heavy Fabric"],
+  },
+  {
+    id: "p2",
+    name: "ARCHIVAL TRENCH COAT / ORANGERED ACCENT",
+    category: "Coats",
+    price: 620,
+    image: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=85",
+    hoverImage: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=85",
+    badge: "RUNWAY EXCLUSIVE",
+    description: "Double-breasted trench coat with structured shoulder pads and Orangered silk satin interior lining. Features storm flap and custom engraved horn buttons.",
+    sizes: ["M", "L", "XL"],
+    specs: ["Water-Resistant Italian Twill", "Orangered Silk Satin Lining", "Belted Waist with Steel Buckle", "Dry Clean Only"],
+  },
+  {
+    id: "p3",
+    name: "RAW DENIM SELVEDGE CARGO TROUSERS",
+    category: "Pants",
+    price: 340,
+    image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=1000&q=85",
+    hoverImage: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1000&q=85",
+    badge: "NEW IN",
+    description: "14oz Japanese selvedge denim pant with wide-leg profile, articulated cargo pockets, and Orangered contrast topstitching.",
+    sizes: ["28", "30", "32", "34"],
+    specs: ["14oz Kurabo Mills Selvedge Denim", "Custom Rivets & Button Fly", "Articulated Knee Pleats", "Unwashed Raw Finish"],
+  },
+  {
+    id: "p4",
+    name: "DECONSTRUCTED FLIGHT BOMBER JACKET",
+    category: "Outerwear",
+    price: 550,
+    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=1000&q=85",
+    hoverImage: "https://images.unsplash.com/photo-1548883354-7622d03aca27?auto=format&fit=crop&w=1000&q=85",
+    badge: "RESTOCKED",
+    description: "Heavy nylon MA-1 flight jacket with asymmetrical Orangered utility straps, custom ribbing, and insulation rating down to -5°C.",
+    sizes: ["S", "M", "L"],
+    specs: ["Military-Grade Flight Nylon", "Primaloft Thermal Insulation", "Heavy Duty Two-Way RiRi Zip", "Water-Repellent Outer"],
+  },
+  {
+    id: "p5",
+    name: "TAILORED EDITORIAL BLAZER / CHARCOAL",
+    category: "Tailoring",
+    price: 490,
+    image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1000&q=85",
+    hoverImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1000&q=85",
+    badge: "CLASSIC",
+    description: "Single-button peak-lapel blazer in deep charcoal virgin wool with high-waist darting and Orangered interior piping.",
+    sizes: ["38R", "40R", "42R", "44R"],
+    specs: ["100% Italian Virgin Wool", "Cupro Breathable Lining", "Padded Shoulders & Peak Lapel", "Made in Portugal"],
+  },
+  {
+    id: "p6",
+    name: "SIGNATURE MONOGRAM HEAVYWEIGHT TEE",
+    category: "Tops",
+    price: 120,
+    image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=85",
+    hoverImage: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=1000&q=85",
+    badge: "ESSENTIAL",
+    description: "Boxy fit short sleeve t-shirt cut from 300 GSM combed jersey with high-density Orangered studio chest print.",
+    sizes: ["S", "M", "L", "XL"],
+    specs: ["300 GSM Combed Organic Cotton", "Ribbed 1.25\" Collar", "High-Density Screenprint", "Pre-shrunk Garment Wash"],
+  },
+];
+
+interface CollectionsGridProps {
+  onQuickView: (product: Product) => void;
+  onAddToCart: (product: Product) => void;
+}
+
+export default function CollectionsGrid({ onQuickView, onAddToCart }: CollectionsGridProps) {
+  const [activeCategory, setActiveCategory] = useState("ALL");
+
+  const categories = ["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"];
+
+  const filteredProducts =
+    activeCategory === "ALL"
+      ? PRODUCTS
+      : PRODUCTS.filter((p) => p.category.toUpperCase() === activeCategory);
+
+  return (
+    <section id="collections" className="py-24 px-6 md:px-16 max-w-[1440px] mx-auto bg-surface">
+      {/* Section Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 border-b border-outline-variant pb-8 gap-6">
+        <div>
+          <span className="font-body text-xs font-bold tracking-[0.2em] text-primary uppercase block mb-2">
+            EDITORIAL CATALOG 2026
+          </span>
+          <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tight text-on-surface">
+            CAPSULE COLLECTION
+          </h2>
+        </div>
+
+        {/* Category Filters */}
+        <div className="flex flex-wrap gap-3">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-4 py-2 text-xs font-bold tracking-[0.15em] font-body uppercase transition-all duration-300 rounded-none cursor-pointer ${
+                activeCategory === cat
+                  ? "bg-primary text-white"
+                  : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Product Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        {filteredProducts.map((product) => (
+          <div
+            key={product.id}
+            className="group relative bg-surface-container-lowest flex flex-col border border-outline-variant/30 transition-all duration-500 hover:border-primary"
+          >
+            {/* Image Container */}
+            <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-container-low">
+              {/* Badge */}
+              {product.badge && (
+                <div className="absolute top-4 left-4 z-10 bg-primary text-white text-[10px] font-bold px-3 py-1 font-body tracking-widest uppercase">
+                  {product.badge}
+                </div>
+              )}
+
+              {/* Main Image */}
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+              />
+              {/* Hover Image */}
+              <img
+                src={product.hoverImage}
+                alt={`${product.name} detail`}
+                className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:scale-105 transition-transform duration-700"
+              />
+
+              {/* Quick View Overlay Button */}
+              <div className="absolute inset-0 bg-inverse-surface/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-6 gap-3">
+                <button
+                  onClick={() => onQuickView(product)}
+                  className="bg-white text-on-surface px-6 py-3 font-body text-xs font-bold tracking-[0.15em] uppercase hover:bg-primary hover:text-white transition-colors duration-300 cursor-pointer shadow-md"
+                >
+                  QUICK LOOK
+                </button>
+                <button
+                  onClick={() => onAddToCart(product)}
+                  className="bg-primary text-white p-3 hover:bg-primary-container transition-colors duration-300 cursor-pointer shadow-md flex items-center justify-center"
+                  aria-label="Add to cart"
+                >
+                  <span className="material-symbols-outlined text-xl">shopping_bag</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Content Details */}
+            <div className="p-6 flex flex-col flex-grow justify-between border-t border-outline-variant/20">
+              <div>
+                <span className="text-[11px] font-body font-bold text-primary tracking-widest uppercase block mb-1">
+                  {product.category}
+                </span>
+                <h3 className="font-display text-lg font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
+                  {product.name}
+                </h3>
+              </div>
+
+              <div className="flex justify-between items-center mt-4 pt-4 border-t border-outline-variant/10">
+                <span className="font-body font-bold text-base text-on-surface">
+                  ${product.price} USD
+                </span>
+                <button
+                  onClick={() => onQuickView(product)}
+                  className="font-body text-xs font-bold text-primary hover:underline tracking-wider uppercase"
+                >
+                  VIEW DETAILS →
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

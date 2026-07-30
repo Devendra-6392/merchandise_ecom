@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --primary: #ad2c00;
+    --primary-container: #d83900;
+    --primary-fixed: #ffdbd1;
+    --primary-fixed-dim: #ffb5a0;
+    --on-primary: #ffffff;
+    
+    --surface: #f9f9f9;
+    --surface-bright: #f9f9f9;
+    --surface-dim: #dadada;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f3f3f3;
+    --surface-container: #eeeeee;
+    --surface-container-high: #e8e8e8;
+    --surface-container-highest: #e2e2e2;
+    --surface-variant: #e2e2e2;
+    
+    --background: #f9f9f9;
+    --on-background: #1a1c1c;
+    --on-surface: #1a1c1c;
+    --on-surface-variant: #5d4038;
+    
+    --secondary: #5f5e5e;
+    --secondary-container: #e2dfde;
+    --on-secondary: #ffffff;
+    --on-secondary-container: #636262;
+    
+    --inverse-surface: #2f3131;
+    --inverse-on-surface: #f0f1f1;
+    --inverse-primary: #ffb5a0;
+    
+    --outline: #926f66;
+    --outline-variant: #e7bdb2;
+    
+    --tertiary: #655b47;
+    --tertiary-container: #7f735f;
+    --on-tertiary: #ffffff;
+    
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Montserrat', sans-serif;
+  }
+}
+
+@theme {
+  --color-primary: #ad2c00;
+  --color-primary-container: #d83900;
+  --color-primary-fixed: #ffdbd1;
+  --color-primary-fixed-dim: #ffb5a0;
+  --color-on-primary: #ffffff;
+  
+  --color-surface: #f9f9f9;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-dim: #dadada;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f3f3;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface-variant: #e2e2e2;
+  
+  --color-background: #f9f9f9;
+  --color-on-background: #1a1c1c;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #5d4038;
+  
+  --color-secondary: #5f5e5e;
+  --color-secondary-container: #e2dfde;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #636262;
+  
+  --color-inverse-surface: #2f3131;
+  --color-inverse-on-surface: #f0f1f1;
+  --color-inverse-primary: #ffb5a0;
+  
+  --color-outline: #926f66;
+  --color-outline-variant: #e7bdb2;
+  
+  --color-tertiary: #655b47;
+  --color-tertiary-container: #7f735f;
+  --color-on-tertiary: #ffffff;
+
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.text-stroke {
+  -webkit-text-stroke: 1px currentColor;
+  color: transparent;
+}
+
+.ken-burns {
+  animation: kenburns 20s infinite alternate cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes kenburns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+.horizontal-expansion {
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.horizontal-expansion:hover {
+  letter-spacing: 0.15em;
+  padding-left: 2.25rem;
+  padding-right: 2.25rem;
+}
+
+.editorial-line {
+  position: relative;
+}
+
+.editorial-line::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #ad2c00;
+  transition: width 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.editorial-line:hover::after {
+  width: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f9f9f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #ad2c00;
+}
