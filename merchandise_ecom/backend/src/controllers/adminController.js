@@ -10,16 +10,17 @@ export const getDashboardStats = async (req, res, next) => {
 
     const orders = await Order.find();
     const totalRevenue = orders.reduce((sum, order) => {
-      return order.paymentDetails && order.paymentDetails.status === 'Successful'
-        ? sum + order.billingSummary.grandTotal
-        : sum;
+      const isPaid = !order.paymentDetails || order.paymentDetails.status === 'Successful' || order.paymentDetails.status === 'Pending';
+      return isPaid ? sum + (order.billingSummary?.grandTotal || 0) : sum;
     }, 0);
 
-    const pendingOrdersCount = await Order.countDocuments({ currentStatus: 'OrderPlaced' });
+    const pendingOrdersCount = await Order.countDocuments({
+      currentStatus: { $in: ['OrderPlaced', 'PaymentVerified', 'DesignApproved'] }
+    });
     const printingOrdersCount = await Order.countDocuments({ currentStatus: 'PrintingInProgress' });
     const deliveredOrdersCount = await Order.countDocuments({ currentStatus: 'Delivered' });
 
-    const lowStockProducts = await Product.find({ stockQuantity: { $lt: 20 }, isActive: true });
+    const lowStockProducts = await Product.find({ stockQuantity: { $lte: 20 }, isActive: true });
 
     res.json({
       success: true,
