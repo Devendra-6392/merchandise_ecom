@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-interface NavbarProps {
-  cartCount: number;
-  onOpenCart: () => void;
-  onOpenSearch: () => void;
-}
-
-export default function Navbar({ cartCount, onOpenCart, onOpenSearch }: NavbarProps) {
+export default function Navbar({ cartCount, onOpenCart, onOpenSearch }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 

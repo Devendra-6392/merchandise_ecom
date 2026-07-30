@@ -1,20 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "../home/CollectionsGrid";
-
-interface ProductQuickViewModalProps {
-  product: Product | null;
-  onClose: () => void;
-  onAddToCartWithSize: (product: Product, size: string) => void;
-}
 
 export default function ProductQuickViewModal({
   product,
   onClose,
   onAddToCartWithSize,
-}: ProductQuickViewModalProps) {
-  const [selectedSize, setSelectedSize] = useState<string>("");
+}) {
+  const [selectedSize, setSelectedSize] = useState("");
 
   if (!product) return null;
 

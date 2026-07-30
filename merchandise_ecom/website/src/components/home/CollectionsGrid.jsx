@@ -2,20 +2,7 @@
 
 import { useState } from "react";
 
-export interface Product {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  image: string;
-  hoverImage: string;
-  badge?: string;
-  description: string;
-  sizes: string[];
-  specs: string[];
-}
-
-export const PRODUCTS: Product[] = [
+export const PRODUCTS = [
   {
     id: "p1",
     name: "ORANGERED OVERSIZED MONOLITH HOODIE",
@@ -90,12 +77,7 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
-interface CollectionsGridProps {
-  onQuickView: (product: Product) => void;
-  onAddToCart: (product: Product) => void;
-}
-
-export default function CollectionsGrid({ onQuickView, onAddToCart }: CollectionsGridProps) {
+export default function CollectionsGrid({ onQuickView, onAddToCart }) {
   const [activeCategory, setActiveCategory] = useState("ALL");
 
   const categories = ["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"];

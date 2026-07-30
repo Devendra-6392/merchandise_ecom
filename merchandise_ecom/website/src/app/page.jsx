@@ -3,17 +3,17 @@
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
-import CollectionsGrid, { Product, PRODUCTS } from "@/components/home/CollectionsGrid";
+import CollectionsGrid, { PRODUCTS } from "@/components/home/CollectionsGrid";
 import EditorialSection from "@/components/home/EditorialSection";
 import JournalSection from "@/components/home/JournalSection";
 import Newsletter from "@/components/home/Newsletter";
 import Footer from "@/components/layout/Footer";
-import CartDrawer, { CartItem } from "@/components/cart/CartDrawer";
+import CartDrawer from "@/components/cart/CartDrawer";
 import ProductQuickViewModal from "@/components/modals/ProductQuickViewModal";
 import SearchModal from "@/components/modals/SearchModal";
 
 export default function Home() {
-  const [cart, setCart] = useState<CartItem[]>([
+  const [cart, setCart] = useState([
     {
       product: PRODUCTS[0],
       size: "L",
@@ -22,9 +22,9 @@ export default function Home() {
   ]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
-  const handleAddToCart = (product: Product, size: string = "M") => {
+  const handleAddToCart = (product, size = "M") => {
     setCart((prev) => {
       const existingIdx = prev.findIndex(
         (item) => item.product.id === product.id && item.size === size
@@ -39,7 +39,7 @@ export default function Home() {
     setIsCartOpen(true);
   };
 
-  const handleRemoveFromCart = (index: number) => {
+  const handleRemoveFromCart = (index) => {
     setCart((prev) => prev.filter((_, i) => i !== index));
   };
 

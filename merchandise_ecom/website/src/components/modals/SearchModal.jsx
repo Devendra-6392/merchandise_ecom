@@ -1,19 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { PRODUCTS, Product } from "../home/CollectionsGrid";
-
-interface SearchModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSelectProduct: (product: Product) => void;
-}
+import { PRODUCTS } from "../home/CollectionsGrid";
 
 export default function SearchModal({
   isOpen,
   onClose,
   onSelectProduct,
-}: SearchModalProps) {
+}) {
   const [query, setQuery] = useState("");
 
   if (!isOpen) return null;

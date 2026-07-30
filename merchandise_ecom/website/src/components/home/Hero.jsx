@@ -1,10 +1,6 @@
 "use client";
 
-interface HeroProps {
-  onExploreClick: () => void;
-}
-
-export default function Hero({ onExploreClick }: HeroProps) {
+export default function Hero({ onExploreClick }) {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-inverse-surface text-white">
       {/* Background Photography with Ken-Burns Effect */}

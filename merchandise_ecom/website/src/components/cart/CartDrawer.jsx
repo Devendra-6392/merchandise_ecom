@@ -1,26 +1,11 @@
 "use client";
 
-import { Product } from "../home/CollectionsGrid";
-
-export interface CartItem {
-  product: Product;
-  size: string;
-  quantity: number;
-}
-
-interface CartDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  cartItems: CartItem[];
-  onRemoveItem: (index: number) => void;
-}
-
 export default function CartDrawer({
   isOpen,
   onClose,
   cartItems,
   onRemoveItem,
-}: CartDrawerProps) {
+}) {
   if (!isOpen) return null;
 
   const subtotal = cartItems.reduce(
