@@ -43,6 +43,17 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product = nu
     setError("");
   }, [product, isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const toggleSize = (size) => {
@@ -109,7 +120,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product = nu
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto">
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto">
       <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100 dark:border-gray-800">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">

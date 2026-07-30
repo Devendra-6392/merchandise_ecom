@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { BoxCubeIcon, BoxIconLine, ChevronDownIcon, GridIcon, HorizontaLDots, ListIcon, PaperPlaneIcon, PencilIcon, PieChartIcon, PlugInIcon, TableIcon, TaskIcon, UserCircleIcon, } from "../icons";
+import { BoxIconLine, ChevronDownIcon, GridIcon, HorizontaLDots, PaperPlaneIcon, PencilIcon, PieChartIcon, TableIcon, TaskIcon, UserCircleIcon, } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
 const navSections = [
@@ -61,44 +61,13 @@ const navSections = [
         ],
     },
     {
-        id: "ui_kit",
-        title: "UI Components",
-        items: [
-            {
-                icon: <BoxCubeIcon />,
-                name: "Component Library",
-                subItems: [
-                    { name: "Alerts", path: "/alerts" },
-                    { name: "Avatar", path: "/avatars" },
-                    { name: "Badge", path: "/badge" },
-                    { name: "Buttons", path: "/buttons" },
-                    { name: "Images", path: "/images" },
-                    { name: "Videos", path: "/videos" },
-                ],
-            },
-            {
-                icon: <ListIcon />,
-                name: "Form Studio",
-                path: "/form-elements",
-            },
-        ],
-    },
-    {
         id: "account",
-        title: "Account & Auth",
+        title: "Account",
         items: [
             {
                 icon: <UserCircleIcon />,
                 name: "User Profile",
                 path: "/profile",
-            },
-            {
-                icon: <PlugInIcon />,
-                name: "Authentication",
-                subItems: [
-                    { name: "Sign In", path: "/signin" },
-                    { name: "Sign Up", path: "/signup" },
-                ],
             },
         ],
     },
