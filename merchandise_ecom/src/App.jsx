@@ -12,6 +12,8 @@ import Buttons from "./pages/UiElements/Buttons";
 import LineChart from "./pages/Charts/LineChart";
 import BarChart from "./pages/Charts/BarChart";
 import Calendar from "./pages/Calendar";
+import ProductList from "./pages/Products/ProductList";
+import AddProduct from "./pages/Products/AddProduct";
 import BasicTables from "./pages/Tables/BasicTables";
 import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
@@ -35,8 +37,10 @@ export default function App() {
           {/* Forms */}
           <Route path="/form-elements" element={<FormElements />} />
 
-          {/* Products & Tables */}
-          <Route path="/products" element={<BasicTables />} />
+          {/* Products & Catalog */}
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/products/add" element={<AddProduct />} />
+          <Route path="/add-product" element={<AddProduct />} />
           <Route path="/basic-tables" element={<BasicTables />} />
 
           {/* Ui Elements */}

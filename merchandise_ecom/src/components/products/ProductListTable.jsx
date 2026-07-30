@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import ProductFormModal from "./ProductFormModal";
+import { PencilIcon, TrashBinIcon } from "../../icons";
 
 export default function ProductListTable() {
   const [products, setProducts] = useState([]);
@@ -130,16 +132,16 @@ export default function ProductListTable() {
             <option value="Stickers">Stickers</option>
           </select>
 
-          {/* Add Product Button (Admin only or default visible) */}
-          <button
-            onClick={handleOpenAddModal}
+          {/* Add Product Button */}
+          <Link
+            to="/products/add"
             className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-brand-500 rounded-lg hover:bg-brand-600 shadow-xs transition"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
             </svg>
             Add Product
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -242,15 +244,19 @@ export default function ProductListTable() {
                     <div className="inline-flex items-center gap-2">
                       <button
                         onClick={() => handleOpenEditModal(p)}
-                        className="px-2.5 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60 transition"
+                        title="Edit Product"
+                        aria-label="Edit Product"
+                        className="inline-flex items-center justify-center p-2 text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60 transition"
                       >
-                        Edit
+                        <PencilIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteProduct(p._id, p.name)}
-                        className="px-2.5 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60 transition"
+                        title="Delete Product"
+                        aria-label="Delete Product"
+                        className="inline-flex items-center justify-center p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60 transition"
                       >
-                        Delete
+                        <TrashBinIcon className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
