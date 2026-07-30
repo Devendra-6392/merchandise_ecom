@@ -59,8 +59,8 @@ export const useAuthStore = create(
               name: email.split("@")[0].toUpperCase(),
               email: email,
               role: "customer",
-              phone: "+1 (555) 019-2834",
-              address: "Via Montenapoleone 18, Milan, 20121, Italy",
+              phone: "+91 98765 43210",
+              address: "Flat 402, Orangered Residency, Bandra West, Mumbai, Maharashtra, 400050, India",
             };
             set({ user: mockUser, isAuthenticated: true, loading: false });
             return { success: true, user: mockUser };
@@ -97,8 +97,8 @@ export const useAuthStore = create(
               name: name,
               email: email,
               role: "customer",
-              phone: "",
-              address: "123 Atelier Way, Fashion District",
+              phone: "+91 98765 43210",
+              address: "Flat 402, Orangered Residency, Bandra West, Mumbai, Maharashtra, 400050, India",
             };
             set({ user: mockUser, isAuthenticated: true, loading: false });
             return { success: true, user: mockUser };

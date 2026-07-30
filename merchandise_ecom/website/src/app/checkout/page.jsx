@@ -23,17 +23,19 @@ export default function CheckoutPage() {
 
   const createOrder = useOrderStore((state) => state.createOrder);
 
-  const [paymentMethod, setPaymentMethod] = useState("CARD");
+  const [paymentMethod, setPaymentMethod] = useState("UPI");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: user?.name ? user.name.split(" ")[0] : "DEVENDRA",
     lastName: user?.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : "BHATT",
     email: user?.email || "devendra@example.com",
-    address: user?.address || "Via Montenapoleone 18",
-    city: "Milan",
-    country: "Italy",
-    zip: "20121",
+    address: user?.address || "Flat 402, Orangered Residency, Bandra West",
+    city: "Mumbai",
+    state: "Maharashtra",
+    country: "India",
+    zip: "400050",
+    upiId: "devendra@okaxis",
     cardNumber: "•••• •••• •••• 4242",
     expDate: "12/28",
     cvv: "888",
@@ -56,9 +58,10 @@ export default function CheckoutPage() {
     const orderData = {
       shippingAddress: {
         name: `${formData.firstName} ${formData.lastName}`.trim(),
-        phone: user?.phone || "+1 (555) 019-2834",
+        phone: user?.phone || "+91 98765 43210",
         street: formData.address,
         city: formData.city,
+        state: formData.state,
         country: formData.country,
         pincode: formData.zip,
       },
@@ -125,7 +128,7 @@ export default function CheckoutPage() {
         <div className="max-w-[1440px] mx-auto flex justify-between items-center">
           <div>
             <span className="text-xs font-body tracking-[0.2em] text-primary-fixed uppercase block mb-1">
-              SECURE DISPATCH CHECKOUT
+              SECURE INDIA DISPATCH CHECKOUT
             </span>
             <h1 className="font-display text-3xl md:text-4xl font-bold">EXPRESS CHECKOUT</h1>
           </div>
@@ -143,7 +146,7 @@ export default function CheckoutPage() {
               <div className="flex justify-between items-center border-b border-outline-variant/20 pb-4">
                 <h2 className="font-display text-xl font-bold text-on-surface flex items-center gap-3">
                   <span className="w-7 h-7 bg-primary text-white text-xs font-bold flex items-center justify-center">1</span>
-                  <span>SHIPPING ADDRESS</span>
+                  <span>DELIVERY ADDRESS (INDIA)</span>
                 </h2>
                 <span className="text-xs font-body text-primary font-bold">REQUIRED</span>
               </div>
@@ -183,7 +186,7 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">STREET ADDRESS</label>
+                <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">STREET ADDRESS / FLAT & BUILDING</label>
                 <input
                   type="text"
                   required
@@ -205,17 +208,17 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">COUNTRY</label>
+                  <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">STATE</label>
                   <input
                     type="text"
                     required
-                    value={formData.country}
-                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    value={formData.state}
+                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                     className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body uppercase outline-none focus:border-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">ZIP CODE</label>
+                  <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">PINCODE</label>
                   <input
                     type="text"
                     required
@@ -232,22 +235,13 @@ export default function CheckoutPage() {
               <div className="flex justify-between items-center border-b border-outline-variant/20 pb-4">
                 <h2 className="font-display text-xl font-bold text-on-surface flex items-center gap-3">
                   <span className="w-7 h-7 bg-primary text-white text-xs font-bold flex items-center justify-center">2</span>
-                  <span>PAYMENT SELECTION</span>
+                  <span>PAYMENT METHOD</span>
                 </h2>
-                <span className="text-xs font-body text-on-surface-variant">ENCRYPTED 256-BIT SSL</span>
+                <span className="text-xs font-body text-on-surface-variant">RAZORPAY / UPI SECURED</span>
               </div>
 
               {/* Payment Type Tabs */}
               <div className="grid grid-cols-3 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("CARD")}
-                  className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "CARD" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
-                  }`}
-                >
-                  CREDIT CARD
-                </button>
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("UPI")}
@@ -255,18 +249,41 @@ export default function CheckoutPage() {
                     paymentMethod === "UPI" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
                   }`}
                 >
-                  UPI / NETBANKING
+                  UPI / GPAY / PHONEPE
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod("RAZORPAY")}
+                  onClick={() => setPaymentMethod("CARD")}
                   className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "RAZORPAY" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
+                    paymentMethod === "CARD" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
                   }`}
                 >
-                  RAZORPAY
+                  DEBIT / CREDIT CARD
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("NETBANKING")}
+                  className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
+                    paymentMethod === "NETBANKING" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
+                  }`}
+                >
+                  NETBANKING
                 </button>
               </div>
+
+              {paymentMethod === "UPI" && (
+                <div className="space-y-3 pt-2">
+                  <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider">ENTER UPI ID / VPA</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.upiId}
+                    onChange={(e) => setFormData({ ...formData, upiId: e.target.value })}
+                    placeholder="e.g. username@okhdfcbank"
+                    className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary"
+                  />
+                </div>
+              )}
 
               {paymentMethod === "CARD" && (
                 <div className="space-y-4 pt-2">
@@ -329,7 +346,7 @@ export default function CheckoutPage() {
                     {item.printType !== "Standard" && (
                       <p className="font-body text-[10px] text-primary font-bold">{item.printType} ({item.printLocation})</p>
                     )}
-                    <span className="font-body font-bold text-xs text-primary">${item.totalItemPrice} USD</span>
+                    <span className="font-body font-bold text-xs text-primary">₹{item.totalItemPrice?.toLocaleString("en-IN")}</span>
                   </div>
                 </div>
               ))}
@@ -339,24 +356,24 @@ export default function CheckoutPage() {
             <div className="border-t border-outline-variant/30 pt-4 space-y-2 font-body text-xs text-on-surface-variant uppercase">
               <div className="flex justify-between">
                 <span>SUBTOTAL</span>
-                <span className="font-bold text-on-surface">${subtotal} USD</span>
+                <span className="font-bold text-on-surface">₹{subtotal.toLocaleString("en-IN")}</span>
               </div>
 
               {discountAmount > 0 && (
                 <div className="flex justify-between text-primary font-bold">
                   <span>DISCOUNT</span>
-                  <span>-${discountAmount.toFixed(2)} USD</span>
+                  <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
                 </div>
               )}
 
               <div className="flex justify-between">
                 <span>EXPRESS DISPATCH</span>
-                <span className="font-bold text-on-surface">${shipping} USD</span>
+                <span className="font-bold text-on-surface">₹{shipping}</span>
               </div>
 
               <div className="flex justify-between pt-2 border-t border-outline-variant/20 font-bold text-base text-on-surface">
                 <span>TOTAL DUE</span>
-                <span className="text-primary font-display text-xl">${grandTotal.toFixed(2)} USD</span>
+                <span className="text-primary font-display text-xl">₹{grandTotal.toLocaleString("en-IN")}</span>
               </div>
             </div>
 
@@ -373,7 +390,7 @@ export default function CheckoutPage() {
                   <span>AUTHORIZING TRANSACTION...</span>
                 </>
               ) : (
-                `CONFIRM & PAY ($${grandTotal.toFixed(2)} USD)`
+                `CONFIRM & PAY (₹${grandTotal.toLocaleString("en-IN")})`
               )}
             </button>
           </div>

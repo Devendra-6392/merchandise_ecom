@@ -36,7 +36,7 @@ export default function OrderHistoryPage() {
               ORDER <span className="text-primary italic">HISTORY</span>
             </h1>
             <p className="font-body text-xs text-white/70 mt-1 uppercase tracking-wider">
-              VIEW AND TRACK ALL YOUR ATELIER ORDERS AND CUSTOM MERCHANDISE DISPATCHES.
+              VIEW AND TRACK ALL YOUR ATELIER ORDERS AND CUSTOM MERCHANDISE DISPATCHES IN INDIA.
             </p>
           </div>
 
@@ -99,13 +99,13 @@ export default function OrderHistoryPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-outline-variant/20 pb-4">
                   <div>
                     <span className="text-[11px] font-body font-bold text-primary tracking-widest uppercase block mb-1">
-                      WAYBILL NO: {order.shippingDetails?.trackingNumber || "DHL-EXPRESS-TRACK"}
+                      WAYBILL NO: {order.shippingDetails?.trackingNumber || "DEL-EXPRESS-TRACK"}
                     </span>
                     <h2 className="font-display text-2xl font-bold text-on-surface">
                       ORDER {order.orderNumber}
                     </h2>
                     <span className="font-body text-xs text-on-surface-variant block mt-1">
-                      PLACED ON {new Date(order.createdAt || Date.now()).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }).toUpperCase()}
+                      PLACED ON {new Date(order.createdAt || Date.now()).toLocaleDateString("en-IN", { month: "long", day: "numeric", year: "numeric" }).toUpperCase()}
                     </span>
                   </div>
 
@@ -114,7 +114,7 @@ export default function OrderHistoryPage() {
                       STAGE: {order.currentStatus}
                     </span>
                     <span className="font-body font-bold text-xl text-on-surface">
-                      ${order.billingSummary?.grandTotal || 0} USD
+                      ₹{order.billingSummary?.grandTotal?.toLocaleString("en-IN") || 0}
                     </span>
                   </div>
                 </div>
@@ -146,7 +146,7 @@ export default function OrderHistoryPage() {
                       </div>
 
                       <div className="text-right font-body font-bold text-sm text-primary">
-                        ${item.totalItemPrice || item.unitPrice * item.quantity} USD
+                        ₹{(item.totalItemPrice || item.unitPrice * item.quantity)?.toLocaleString("en-IN")}
                       </div>
                     </div>
                   ))}
@@ -155,7 +155,7 @@ export default function OrderHistoryPage() {
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-outline-variant/20">
                   <div className="font-body text-xs text-on-surface-variant uppercase">
-                    DESTINATION: {order.shippingAddress?.city || "Milan"}, {order.shippingAddress?.country || "Italy"}
+                    DESTINATION: {order.shippingAddress?.city || "Mumbai"}, {order.shippingAddress?.country || "India"}
                   </div>
 
                   <Link

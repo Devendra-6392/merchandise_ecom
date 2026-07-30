@@ -94,7 +94,6 @@ export default function ProductsPage() {
 
           {/* Search & Sort Controls */}
           <div className="flex flex-wrap items-center gap-4">
-            {/* Search Box */}
             <div className="relative flex-grow sm:flex-grow-0">
               <input
                 type="text"
@@ -113,7 +112,6 @@ export default function ProductsPage() {
               )}
             </div>
 
-            {/* Sort Selector */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -151,7 +149,6 @@ export default function ProductsPage() {
               key={product.id}
               className="group relative bg-surface-container-lowest flex flex-col border border-outline-variant/30 transition-all duration-500 hover:border-primary"
             >
-              {/* Image Container */}
               <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-container-low">
                 {product.badge && (
                   <div className="absolute top-4 left-4 z-10 bg-primary text-white text-[10px] font-bold px-3 py-1 font-body tracking-widest uppercase">
@@ -170,7 +167,6 @@ export default function ProductsPage() {
                   className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:scale-105 transition-transform duration-700"
                 />
 
-                {/* Quick Actions Buttons */}
                 <div className="absolute inset-0 bg-inverse-surface/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 gap-3">
                   <Link
                     href={`/products/${product.id}/customize`}
@@ -197,7 +193,6 @@ export default function ProductsPage() {
                 </div>
               </div>
 
-              {/* Product Info */}
               <div className="p-6 flex flex-col flex-grow justify-between border-t border-outline-variant/20">
                 <div>
                   <span className="text-[11px] font-body font-bold text-primary tracking-widest uppercase block mb-1">
@@ -212,7 +207,7 @@ export default function ProductsPage() {
 
                 <div className="flex justify-between items-center mt-4 pt-4 border-t border-outline-variant/10">
                   <span className="font-body font-bold text-base text-on-surface">
-                    ${product.price} USD
+                    ₹{product.price?.toLocaleString("en-IN")}
                   </span>
                   <div className="flex items-center gap-3">
                     <Link

@@ -8,9 +8,9 @@ export const useCartStore = create(
         {
           id: "default-item-1",
           product: {
-            id: "prod_coat_01",
-            name: "ATELIER DOUBLE-BREASTED TRENCH",
-            price: 580,
+            id: "p2",
+            name: "ARCHIVAL TRENCH COAT / ORANGERED ACCENT",
+            price: 5999,
             image: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=85",
             hoverImage: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=85",
             category: "COATS",
@@ -20,9 +20,9 @@ export const useCartStore = create(
           printType: "DTF Printing",
           printLocation: "Front",
           artworkUrl: null,
-          unitPrice: 580,
+          unitPrice: 5999,
           quantity: 1,
-          totalItemPrice: 580,
+          totalItemPrice: 5999,
         },
       ],
       promoCode: "",
@@ -51,7 +51,6 @@ export const useCartStore = create(
           totalItemPrice: unitPrice * qty,
         };
 
-        // Check for matching item signature
         const existingIndex = currentItems.findIndex(
           (i) =>
             i.product?.id === itemObj.product?.id &&
@@ -119,7 +118,6 @@ export const useCartStore = create(
 
       removePromoCode: () => set({ promoCode: "", discount: 0 }),
 
-      // Calculated getters
       getSubtotal: () => {
         return get().items.reduce((sum, item) => sum + (item.totalItemPrice || 0), 0);
       },
@@ -129,7 +127,7 @@ export const useCartStore = create(
       },
       getShippingCharge: () => {
         const subtotal = get().getSubtotal();
-        return subtotal > 0 ? 25 : 0;
+        return subtotal > 0 ? 150 : 0;
       },
       getGrandTotal: () => {
         const subtotal = get().getSubtotal();

@@ -11,45 +11,45 @@ const INITIAL_MOCK_ORDERS = [
     createdAt: new Date().toISOString(),
     currentStatus: "Dispatched",
     billingSummary: {
-      subtotal: 580,
+      subtotal: 5999,
       taxAmount: 0,
-      shippingCharge: 25,
-      grandTotal: 605,
+      shippingCharge: 150,
+      grandTotal: 6149,
     },
     shippingAddress: {
       name: "DEVENDRA BHATT",
-      phone: "+1 (555) 019-2834",
-      street: "Via Montenapoleone 18",
-      city: "Milan",
-      pincode: "20121",
-      country: "Italy",
+      phone: "+91 98765 43210",
+      street: "Flat 402, Orangered Residency, Bandra West",
+      city: "Mumbai",
+      pincode: "400050",
+      country: "India",
     },
     items: [
       {
-        productName: "ATELIER DOUBLE-BREASTED TRENCH",
+        productName: "ARCHIVAL TRENCH COAT / ORANGERED ACCENT",
         quantity: 1,
         selectedSize: "L",
         selectedColor: "BLACK",
         selectedPrintType: "DTF Printing",
         printLocation: "Front",
         artworkUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80",
-        unitPrice: 580,
-        totalItemPrice: 580,
+        unitPrice: 5999,
+        totalItemPrice: 5999,
       },
     ],
     timeline: [
       { status: "OrderPlaced", note: "Order placed successfully by client", timestamp: "2026-07-30T08:30:00Z" },
-      { status: "PaymentVerified", note: "Payment verified via 256-bit SSL gateway", timestamp: "2026-07-30T09:15:00Z" },
+      { status: "PaymentVerified", note: "Payment verified via Razorpay / UPI Gateway", timestamp: "2026-07-30T09:15:00Z" },
       { status: "DesignApproved", note: "Artwork vector resolution inspected & approved", timestamp: "2026-07-30T10:45:00Z" },
       { status: "PrintingInProgress", note: "Garment scheduled on DTF print bed #3", timestamp: "2026-07-30T12:00:00Z" },
       { status: "QualityCheck", note: "Passed high-density heat press quality control", timestamp: "2026-07-30T14:20:00Z" },
       { status: "Packed", note: "Packaged in serialized presentation box", timestamp: "2026-07-30T15:10:00Z" },
-      { status: "ShipmentCreated", note: "DHL Express AWB generated (DHL-9948201-IT)", timestamp: "2026-07-30T16:00:00Z" },
-      { status: "Shipped", note: "Handed over to DHL International Hub Milan", timestamp: "2026-07-30T17:30:00Z" },
+      { status: "ShipmentCreated", note: "Delhivery Express AWB generated (DEL-9948201-IN)", timestamp: "2026-07-30T16:00:00Z" },
+      { status: "Shipped", note: "Handed over to Delhivery Express Hub Mumbai", timestamp: "2026-07-30T17:30:00Z" },
     ],
     shippingDetails: {
-      courierName: "DHL Express International",
-      trackingNumber: "DHL-9948201-IT",
+      courierName: "Delhivery Express / Shiprocket",
+      trackingNumber: "DEL-9948201-IN",
       estimatedDeliveryDate: "2026-08-02T18:00:00Z",
     },
   },
@@ -85,7 +85,6 @@ export const useOrderStore = create(
       fetchOrderById: async (orderIdOrNumber) => {
         set({ loading: true, error: null });
 
-        // First check local Zustand store
         const existing = get().orders.find(
           (o) => o._id === orderIdOrNumber || o.orderNumber === orderIdOrNumber
         );
@@ -109,7 +108,6 @@ export const useOrderStore = create(
           return existing;
         }
 
-        // Fallback demo order
         const fallbackOrder = get().orders[0] || INITIAL_MOCK_ORDERS[0];
         const formatted = { ...fallbackOrder, orderNumber: orderIdOrNumber };
         set({ currentOrder: formatted, loading: false });
@@ -123,7 +121,7 @@ export const useOrderStore = create(
         const newOrder = {
           _id: `ord_${Date.now()}`,
           orderNumber,
-          date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+          date: new Date().toLocaleDateString("en-IN", { month: "long", day: "numeric", year: "numeric" }),
           createdAt: new Date().toISOString(),
           currentStatus: "PaymentVerified",
           billingSummary: orderData.billingSummary,
@@ -137,13 +135,13 @@ export const useOrderStore = create(
             },
             {
               status: "PaymentVerified",
-              note: "Payment authorized via SSL Gateway (Transaction TXN-" + Math.floor(100000 + Math.random() * 900000) + ")",
+              note: "Payment authorized via Razorpay / UPI (Transaction TXN-" + Math.floor(100000 + Math.random() * 900000) + ")",
               timestamp: new Date().toISOString(),
             },
           ],
           shippingDetails: {
-            courierName: "DHL Express International",
-            trackingNumber: `DHL-${Math.floor(1000000 + Math.random() * 9000000)}-EX`,
+            courierName: "Delhivery Express / Shiprocket",
+            trackingNumber: `DEL-${Math.floor(1000000 + Math.random() * 9000000)}-IN`,
             estimatedDeliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
           },
         };
@@ -168,7 +166,6 @@ export const useOrderStore = create(
           console.warn("Create order API notice:", err.message);
         }
 
-        // Add to local state
         set((state) => ({
           orders: [newOrder, ...state.orders],
           currentOrder: newOrder,
@@ -193,7 +190,6 @@ export const useOrderStore = create(
           console.warn("Cancel order API notice:", err.message);
         }
 
-        // Update in state
         set((state) => {
           const updatedOrders = state.orders.map((o) => {
             if (o._id === orderIdOrNumber || o.orderNumber === orderIdOrNumber) {

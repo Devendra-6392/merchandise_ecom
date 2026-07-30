@@ -91,7 +91,6 @@ export default function CartPage() {
                   key={item.id}
                   className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-surface-container-lowest p-4 border border-outline-variant/30 relative"
                 >
-                  {/* Thumbnail & Info */}
                   <div className="md:col-span-6 flex gap-4 items-center">
                     <div className="relative w-20 h-24 bg-surface-container-low shrink-0 overflow-hidden border border-outline-variant/30">
                       <img
@@ -136,7 +135,6 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  {/* Size & Quantity Controls */}
                   <div className="md:col-span-2 flex flex-col items-center gap-2">
                     <span className="font-body text-xs font-bold text-on-surface">SIZE: {item.size}</span>
                     <div className="flex items-center border border-outline-variant/40">
@@ -156,19 +154,16 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  {/* Unit Price */}
                   <div className="md:col-span-2 text-right font-body text-sm font-bold text-on-surface-variant">
-                    ${item.unitPrice} USD
+                    ₹{item.unitPrice?.toLocaleString("en-IN")}
                   </div>
 
-                  {/* Item Total */}
                   <div className="md:col-span-2 text-right font-body text-base font-bold text-primary">
-                    ${item.totalItemPrice} USD
+                    ₹{item.totalItemPrice?.toLocaleString("en-IN")}
                   </div>
                 </div>
               ))}
 
-              {/* Promo Code Box */}
               <div className="pt-6">
                 <form onSubmit={handleApplyPromo} className="flex gap-2 max-w-md">
                   <input
@@ -203,29 +198,29 @@ export default function CartPage() {
               <div className="space-y-3 font-body text-xs tracking-wider uppercase text-on-surface-variant">
                 <div className="flex justify-between">
                   <span>GARMENTS SUBTOTAL</span>
-                  <span className="font-bold text-on-surface">${subtotal} USD</span>
+                  <span className="font-bold text-on-surface">₹{subtotal.toLocaleString("en-IN")}</span>
                 </div>
 
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-primary">
                     <span>PROMO DISCOUNT ({(discount * 100).toFixed(0)}%)</span>
-                    <span className="font-bold">-${discountAmount.toFixed(2)} USD</span>
+                    <span className="font-bold">-₹{discountAmount.toLocaleString("en-IN")}</span>
                   </div>
                 )}
 
                 <div className="flex justify-between">
-                  <span>EXPRESS COURIER DISPATCH</span>
-                  <span className="font-bold text-on-surface">${shipping} USD</span>
+                  <span>EXPRESS INDIA DISPATCH</span>
+                  <span className="font-bold text-on-surface">₹{shipping}</span>
                 </div>
               </div>
 
               <div className="border-t border-outline-variant/30 pt-4 flex justify-between items-center font-body">
                 <span className="font-bold text-sm uppercase tracking-wider">TOTAL ESTIMATE</span>
-                <span className="font-display text-2xl font-bold text-primary">${grandTotal.toFixed(2)} USD</span>
+                <span className="font-display text-2xl font-bold text-primary">₹{grandTotal.toLocaleString("en-IN")}</span>
               </div>
 
               <p className="text-[10px] font-body text-on-surface-variant uppercase tracking-wider">
-                DUTIES & IMPORT TAXES ARE CALCULATED BEFORE DISPATCH.
+                INCLUSIVE OF ALL APPLICABLE GST TAXES ACROSS INDIA.
               </p>
 
               <button

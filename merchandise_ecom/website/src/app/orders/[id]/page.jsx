@@ -25,7 +25,7 @@ export default function OrderTrackingPage({ params }) {
   const resolvedParams = use(params);
   const orderId = resolvedParams.id || "ORD-89241";
 
-  const { fetchOrderById, currentOrder, cancelOrder, loading } = useOrderStore();
+  const { fetchOrderById, currentOrder, cancelOrder } = useOrderStore();
   const [cancelling, setCancelling] = useState(false);
   const [cancelMessage, setCancelMessage] = useState("");
 
@@ -36,8 +36,8 @@ export default function OrderTrackingPage({ params }) {
   const order = currentOrder || {
     orderNumber: orderId,
     currentStatus: "PaymentVerified",
-    shippingAddress: { name: "DEVENDRA BHATT", street: "Via Montenapoleone 18", city: "Milan", country: "Italy", pincode: "20121" },
-    billingSummary: { grandTotal: 605 },
+    shippingAddress: { name: "DEVENDRA BHATT", street: "Flat 402, Orangered Residency, Bandra West", city: "Mumbai", state: "Maharashtra", country: "India", pincode: "400050" },
+    billingSummary: { grandTotal: 6149 },
     items: [],
     timeline: [],
   };
@@ -66,13 +66,13 @@ export default function OrderTrackingPage({ params }) {
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
             <span className="text-xs font-body tracking-[0.25em] text-primary-fixed uppercase block mb-2">
-              DHL EXPRESS DISPATCH TRACKING
+              DELHIVERY / SHIPROCKET EXPRESS TRACKING (INDIA)
             </span>
             <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight">
               SHIPMENT {order.orderNumber || orderId}
             </h1>
             <p className="font-body text-xs text-white/70 mt-1 uppercase tracking-wider">
-              WAYBILL NO: {order.shippingDetails?.trackingNumber || "DHL-9948201-IT"} | COURIER: {order.shippingDetails?.courierName || "DHL EXPRESS"}
+              WAYBILL NO: {order.shippingDetails?.trackingNumber || "DEL-9948201-IN"} | COURIER: {order.shippingDetails?.courierName || "DELHIVERY EXPRESS"}
             </p>
           </div>
           <Link
@@ -108,7 +108,7 @@ export default function OrderTrackingPage({ params }) {
               <span className="material-symbols-outlined text-4xl block">cancel</span>
               <h3 className="font-display text-lg font-bold">ORDER HAS BEEN CANCELLED</h3>
               <p className="font-body text-xs uppercase">
-                THIS ORDER WAS CANCELLED PRIOR TO PRINT FLOOR DISPATCH. REFUND PROCESSING HAS BEEN AUTHORIZED.
+                THIS ORDER WAS CANCELLED PRIOR TO PRINT FLOOR DISPATCH. REFUND PROCESSING TO YOUR ORIGINAL UPI/PAYMENT METHOD HAS BEEN AUTHORIZED.
               </p>
             </div>
           ) : (
@@ -194,7 +194,7 @@ export default function OrderTrackingPage({ params }) {
                         )}
                       </div>
                       <span className="font-body font-bold text-base text-primary block pt-1">
-                        ${item.totalItemPrice || item.unitPrice * item.quantity} USD
+                        ₹{(item.totalItemPrice || item.unitPrice * item.quantity)?.toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>
@@ -220,13 +220,13 @@ export default function OrderTrackingPage({ params }) {
               <div>
                 <span className="font-bold text-on-surface block mb-1">DISPATCH ADDRESS</span>
                 <span>
-                  {order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.pincode}, {order.shippingAddress?.country}
+                  {order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.state || "Maharashtra"}, {order.shippingAddress?.pincode}, {order.shippingAddress?.country || "India"}
                 </span>
               </div>
 
               <div>
                 <span className="font-bold text-on-surface block mb-1">COURIER SERVICE</span>
-                <span>{order.shippingDetails?.courierName || "DHL EXPRESS INTERNATIONAL (INSURED)"}</span>
+                <span>{order.shippingDetails?.courierName || "DELHIVERY EXPRESS (INSURED)"}</span>
               </div>
             </div>
 

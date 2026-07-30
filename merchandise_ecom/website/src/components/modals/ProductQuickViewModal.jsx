@@ -55,7 +55,7 @@ export default function ProductQuickViewModal({
               {product.name}
             </h2>
             <div className="font-body text-xl font-bold text-primary mb-6">
-              ${product.price} USD
+              ₹{product.price?.toLocaleString("en-IN")}
             </div>
 
             <p className="font-body text-xs text-on-surface-variant leading-relaxed font-light mb-6">
@@ -115,7 +115,7 @@ export default function ProductQuickViewModal({
               }}
               className="w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all duration-300 horizontal-expansion cursor-pointer shadow-lg"
             >
-              ADD TO BAG (${product.price} USD)
+              ADD TO BAG (₹{product.price?.toLocaleString("en-IN")})
             </button>
           </div>
         </div>

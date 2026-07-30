@@ -14,20 +14,20 @@ const COLOR_PALETTE = [
 ];
 
 const PRINT_TYPES = [
-  { id: "DTF", name: "DTF Printing", desc: "High Detail & Micro-Gradient Color Saturation", priceAdd: 12 },
-  { id: "SCREEN", name: "Screen Printing", desc: "Heavy Plastisol Ink — Maximum Durability", priceAdd: 15 },
-  { id: "EMBROIDERY", name: "Embroidery", desc: "Premium 3D Raised Threading Finish", priceAdd: 22 },
-  { id: "SUBLIMATION", name: "Sublimation", desc: "Seamless Fabric Dye Fusion", priceAdd: 18 },
-  { id: "UV", name: "UV Printing", desc: "Gloss Tactile & Metallic Accent Texture", priceAdd: 25 },
+  { id: "DTF", name: "DTF Printing", desc: "High Detail & Micro-Gradient Color Saturation", priceAdd: 250 },
+  { id: "SCREEN", name: "Screen Printing", desc: "Heavy Plastisol Ink — Maximum Durability", priceAdd: 300 },
+  { id: "EMBROIDERY", name: "Embroidery", desc: "Premium 3D Raised Threading Finish", priceAdd: 450 },
+  { id: "SUBLIMATION", name: "Sublimation", desc: "Seamless Fabric Dye Fusion", priceAdd: 350 },
+  { id: "UV", name: "UV Printing", desc: "Gloss Tactile & Metallic Accent Texture", priceAdd: 500 },
 ];
 
 const PRINT_LOCATIONS = [
   { id: "Front", name: "Front Center", priceAdd: 0 },
-  { id: "Back", name: "Full Back", priceAdd: 10 },
+  { id: "Back", name: "Full Back", priceAdd: 200 },
   { id: "Left Chest", name: "Left Chest Emblem", priceAdd: 0 },
-  { id: "Right Sleeve", name: "Right Sleeve", priceAdd: 8 },
-  { id: "Left Sleeve", name: "Left Sleeve", priceAdd: 8 },
-  { id: "Full Print", name: "Full Garment Wrap", priceAdd: 30 },
+  { id: "Right Sleeve", name: "Right Sleeve", priceAdd: 150 },
+  { id: "Left Sleeve", name: "Left Sleeve", priceAdd: 150 },
+  { id: "Full Print", name: "Full Garment Wrap", priceAdd: 600 },
 ];
 
 const SAMPLE_PRESETS = [
@@ -41,7 +41,7 @@ export default function CustomizationCanvas({ product }) {
   const router = useRouter();
   const addToCart = useCartStore((state) => state.addToCart);
 
-  const [selectedView, setSelectedView] = useState("FRONT"); // FRONT / BACK
+  const [selectedView, setSelectedView] = useState("FRONT");
   const [selectedColor, setSelectedColor] = useState(COLOR_PALETTE[0]);
   const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || "M");
   const [selectedPrintType, setSelectedPrintType] = useState(PRINT_TYPES[0]);
@@ -56,8 +56,7 @@ export default function CustomizationCanvas({ product }) {
 
   const fileInputRef = useRef(null);
 
-  // Compute pricing
-  const basePrice = product?.price || 150;
+  const basePrice = product?.price || 2499;
   const printTypeCost = selectedPrintType.priceAdd;
   const locationCost = selectedLocation.priceAdd;
   const unitPrice = basePrice + printTypeCost + locationCost;
@@ -230,9 +229,9 @@ export default function CustomizationCanvas({ product }) {
             CUSTOMIZE: {product?.name}
           </h1>
           <div className="flex items-center gap-3 mt-3">
-            <span className="font-body text-2xl font-bold text-primary">${unitPrice} USD</span>
+            <span className="font-body text-2xl font-bold text-primary">₹{unitPrice.toLocaleString("en-IN")}</span>
             <span className="text-[11px] font-body text-on-surface-variant bg-surface-container-high px-3 py-1 uppercase tracking-wider font-bold">
-              BASE: ${basePrice} + PRINT: ${printTypeCost + locationCost}
+              BASE: ₹{basePrice.toLocaleString("en-IN")} + PRINT: ₹{(printTypeCost + locationCost).toLocaleString("en-IN")}
             </span>
           </div>
         </div>
@@ -297,7 +296,7 @@ export default function CustomizationCanvas({ product }) {
               >
                 <div className="flex justify-between items-center">
                   <span className="font-body text-xs font-bold uppercase">{pt.name}</span>
-                  <span className="font-body text-[11px] font-bold text-primary">+${pt.priceAdd}</span>
+                  <span className="font-body text-[11px] font-bold text-primary">+₹{pt.priceAdd}</span>
                 </div>
                 <p className="font-body text-[10px] text-on-surface-variant mt-1 line-clamp-1">{pt.desc}</p>
               </button>
@@ -321,7 +320,7 @@ export default function CustomizationCanvas({ product }) {
                     : "bg-surface-container-low text-on-surface border-outline-variant/40 hover:border-primary"
                 }`}
               >
-                {loc.name} {loc.priceAdd > 0 && `(+$${loc.priceAdd})`}
+                {loc.name} {loc.priceAdd > 0 && `(+₹${loc.priceAdd})`}
               </button>
             ))}
           </div>
@@ -333,7 +332,6 @@ export default function CustomizationCanvas({ product }) {
             5. UPLOAD ARTWORK OR CHOOSE PRESET
           </label>
 
-          {/* File Upload Button */}
           <div className="flex gap-3">
             <button
               onClick={() => fileInputRef.current?.click()}
@@ -351,7 +349,6 @@ export default function CustomizationCanvas({ product }) {
             />
           </div>
 
-          {/* Preset Artwork Graphics */}
           <div>
             <span className="text-[10px] font-body text-on-surface-variant font-bold uppercase block mb-2">
               OR SELECT CURATED PRESET GRAPHIC:
@@ -371,7 +368,6 @@ export default function CustomizationCanvas({ product }) {
             </div>
           </div>
 
-          {/* Custom Text Overlay Option */}
           <div className="pt-2">
             <label className="block text-[10px] font-body font-bold text-on-surface-variant uppercase mb-1">
               ADD CUSTOM TYPOGRAPHY TEXT (OPTIONAL):
@@ -402,7 +398,7 @@ export default function CustomizationCanvas({ product }) {
             className="w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all duration-300 shadow-xl flex items-center justify-center gap-2 cursor-pointer"
           >
             <span className="material-symbols-outlined text-lg">shopping_bag</span>
-            <span>ADD CUSTOMIZED MERCH TO BAG (${unitPrice} USD)</span>
+            <span>ADD CUSTOMIZED MERCH TO BAG (₹{unitPrice.toLocaleString("en-IN")})</span>
           </button>
 
           <button

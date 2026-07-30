@@ -177,7 +177,7 @@ export default function ProfilePage() {
                     <div>
                       <span className="font-display font-bold text-lg text-on-surface">{order.orderNumber}</span>
                       <span className="font-body text-xs text-on-surface-variant block mt-1">
-                        PLACED ON {new Date(order.createdAt || Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}
+                        PLACED ON {new Date(order.createdAt || Date.now()).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
@@ -185,7 +185,7 @@ export default function ProfilePage() {
                         {order.currentStatus}
                       </span>
                       <span className="font-body font-bold text-base text-on-surface">
-                        ${order.billingSummary?.grandTotal || 0} USD
+                        ₹{order.billingSummary?.grandTotal?.toLocaleString("en-IN") || 0}
                       </span>
                     </div>
                   </div>
@@ -200,7 +200,7 @@ export default function ProfilePage() {
                         <div>
                           <h4 className="font-display text-sm font-bold text-on-surface">{item.productName}</h4>
                           <span className="font-body text-xs text-on-surface-variant">
-                            SIZE: {item.selectedSize} | QTY: {item.quantity} | ${item.unitPrice} USD
+                            SIZE: {item.selectedSize} | QTY: {item.quantity} | ₹{item.unitPrice?.toLocaleString("en-IN")}
                           </span>
                           {item.selectedPrintType && item.selectedPrintType !== "Standard" && (
                             <span className="font-body text-[10px] text-primary font-bold block">
@@ -214,7 +214,7 @@ export default function ProfilePage() {
 
                   <div className="pt-4 border-t border-outline-variant/15 flex justify-between items-center">
                     <span className="font-body text-xs text-on-surface-variant uppercase">
-                      COURIER: {order.shippingDetails?.courierName || "DHL EXPRESS"} ({order.shippingDetails?.trackingNumber || "PENDING"})
+                      COURIER: {order.shippingDetails?.courierName || "DELHIVERY EXPRESS"} ({order.shippingDetails?.trackingNumber || "PENDING"})
                     </span>
                     <Link
                       href={`/orders/${order.orderNumber}`}
@@ -238,7 +238,7 @@ export default function ProfilePage() {
               </span>
               <h3 className="font-display text-lg font-bold text-on-surface">{(user?.name || "DEVENDRA BHATT").toUpperCase()}</h3>
               <p className="font-body text-xs text-on-surface-variant leading-relaxed">
-                {user?.address || "Via Montenapoleone 18, Milan, 20121, Italy"}
+                {user?.address || "Flat 402, Orangered Residency, Bandra West, Mumbai, Maharashtra, 400050, India"}
               </p>
               <button className="font-body text-xs font-bold text-primary hover:underline uppercase cursor-pointer">EDIT ADDRESS</button>
             </div>
@@ -254,9 +254,9 @@ export default function ProfilePage() {
                 <input type="checkbox" defaultChecked className="accent-primary" />
                 <span>RECEIVE PRIVATE 1-HOUR CAPSULE DROP ANNOUNCEMENTS</span>
               </label>
-              <label className="flex items-center gap-3 font-body text-xs text-on-surface cursor-pointer">
+              <label className="flex items-center gap-3 font-body text-xs font-bold text-on-surface cursor-pointer">
                 <input type="checkbox" defaultChecked className="accent-primary" />
-                <span>DHL EXPRESS DISPATCH TRACKING ALERTS</span>
+                <span>DELHIVERY EXPRESS DISPATCH TRACKING ALERTS</span>
               </label>
             </div>
             <button className="bg-primary text-white px-6 py-3 font-body text-xs font-bold tracking-widest uppercase hover:bg-primary-container transition-all cursor-pointer">

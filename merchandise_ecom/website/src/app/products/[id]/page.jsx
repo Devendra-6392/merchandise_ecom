@@ -67,7 +67,6 @@ export default function ProductDetailPage({ params }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Image Gallery */}
           <div className="lg:col-span-7 flex flex-col md:flex-row gap-4">
-            {/* Thumbnails */}
             <div className="flex md:flex-col gap-3 order-2 md:order-1 overflow-x-auto shrink-0">
               {images.map((img, idx) => (
                 <button
@@ -82,7 +81,6 @@ export default function ProductDetailPage({ params }) {
               ))}
             </div>
 
-            {/* Main Stage Image */}
             <div className="order-1 md:order-2 flex-grow aspect-[3/4] bg-surface-container-low relative overflow-hidden border border-outline-variant/30">
               {product.badge && (
                 <span className="absolute top-4 left-4 z-10 bg-primary text-white text-[10px] font-bold px-3 py-1 font-body tracking-widest uppercase">
@@ -107,9 +105,9 @@ export default function ProductDetailPage({ params }) {
                 {product.name}
               </h1>
               <div className="flex items-center gap-4">
-                <span className="font-body text-2xl font-bold text-primary">${product.price} USD</span>
-                <span className="text-xs font-body text-on-surface-variant tracking-wider uppercase bg-surface-container-high px-3 py-1">
-                  FREE DISPATCH WORLDWIDE
+                <span className="font-body text-2xl font-bold text-primary">₹{product.price?.toLocaleString("en-IN")}</span>
+                <span className="text-xs font-body text-on-surface-variant tracking-wider uppercase bg-surface-container-high px-3 py-1 font-bold">
+                  FREE DISPATCH ACROSS INDIA
                 </span>
               </div>
             </div>
@@ -196,7 +194,7 @@ export default function ProductDetailPage({ params }) {
                 className="w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all duration-300 horizontal-expansion cursor-pointer shadow-lg flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-lg">shopping_bag</span>
-                <span>ADD TO SHOPPING BAG (${product.price * quantity} USD)</span>
+                <span>ADD TO SHOPPING BAG (₹{(product.price * quantity).toLocaleString("en-IN")})</span>
               </button>
 
               <button
@@ -249,13 +247,13 @@ export default function ProductDetailPage({ params }) {
 
               {activeTab === "CARE" && (
                 <p className="text-xs font-body text-on-surface-variant leading-relaxed">
-                  Machine wash cold with like colors. Do not bleach. Lay flat to dry or line dry in shade. Cool iron if necessary. Dry clean optional for outer trench layers.
+                  Machine wash cold with like colors. Do not bleach. Lay flat to dry or line dry in shade. Cool iron if necessary.
                 </p>
               )}
 
               {activeTab === "DISPATCH" && (
                 <p className="text-xs font-body text-on-surface-variant leading-relaxed">
-                  All orders ship via insured DHL Express within 24-48 hours. Returns accepted within 14 days of delivery in original serialized presentation packaging.
+                  All India orders ship via insured Delhivery Express within 24-48 hours. Returns accepted within 7 days of delivery.
                 </p>
               )}
             </div>
@@ -281,7 +279,7 @@ export default function ProductDetailPage({ params }) {
                   <div className="p-4">
                     <span className="text-[10px] font-body font-bold text-primary tracking-widest uppercase block">{rel.category}</span>
                     <h3 className="font-display text-sm font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">{rel.name}</h3>
-                    <span className="font-body font-bold text-sm text-on-surface mt-2 block">${rel.price} USD</span>
+                    <span className="font-body font-bold text-sm text-on-surface mt-2 block">₹{rel.price?.toLocaleString("en-IN")}</span>
                   </div>
                 </Link>
               </div>

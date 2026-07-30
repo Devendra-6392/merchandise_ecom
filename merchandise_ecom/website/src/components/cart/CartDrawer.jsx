@@ -68,7 +68,6 @@ export default function CartDrawer({ isOpen, onClose }) {
                   key={item.id}
                   className="flex gap-4 p-4 bg-surface-container-lowest border border-outline-variant/20 relative"
                 >
-                  {/* Image or Artwork Thumbnail */}
                   <div className="relative w-20 h-24 bg-surface-container-low shrink-0 overflow-hidden border border-outline-variant/30">
                     <img
                       src={item.product?.image || "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=400&q=80"}
@@ -119,7 +118,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                       </div>
 
                       <span className="font-body font-bold text-sm text-primary">
-                        ${item.totalItemPrice} USD
+                        ₹{item.totalItemPrice?.toLocaleString("en-IN")}
                       </span>
 
                       <button
@@ -138,10 +137,10 @@ export default function CartDrawer({ isOpen, onClose }) {
             <div className="p-6 border-t border-outline-variant/30 bg-surface-container-low space-y-4">
               <div className="flex justify-between items-center text-xs font-body font-bold uppercase tracking-wider">
                 <span>SUBTOTAL</span>
-                <span className="text-lg text-primary">${subtotal} USD</span>
+                <span className="text-lg text-primary">₹{subtotal?.toLocaleString("en-IN")}</span>
               </div>
               <p className="text-[10px] font-body text-on-surface-variant uppercase tracking-wider">
-                TAXES AND WORLDWIDE COURIER DISPATCH CALCULATED AT CHECKOUT.
+                TAXES AND EXPRESS DISPATCH CALCULATED AT CHECKOUT.
               </p>
 
               <div className="grid grid-cols-2 gap-2">
