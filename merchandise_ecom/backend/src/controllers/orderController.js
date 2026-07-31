@@ -41,6 +41,10 @@ export const createOrder = async (req, res, next) => {
         grandTotal: cart.finalAmount
       },
       currentStatus: 'OrderPlaced',
+      paymentDetails: {
+        gateway: req.body.paymentMethod === 'Razorpay' ? 'Razorpay' : 'Cash On Delivery',
+        status: 'Pending'
+      },
       timeline: [{
         status: 'OrderPlaced',
         note: 'Order successfully created and placed by customer',

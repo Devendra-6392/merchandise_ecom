@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useOrderStore } from "@/store/useOrderStore";
+import Lottie from "lottie-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -23,8 +24,10 @@ export default function CheckoutPage() {
 
   const createOrder = useOrderStore((state) => state.createOrder);
 
-  const [paymentMethod, setPaymentMethod] = useState("UPI");
+  const [paymentMethod, setPaymentMethod] = useState("RAZORPAY");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const token = useAuthStore((state) => state.token);
 
   const [formData, setFormData] = useState({
     firstName: user?.name ? user.name.split(" ")[0] : "DEVENDRA",
@@ -56,6 +59,7 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     const orderData = {
+      paymentMethod,
       shippingAddress: {
         name: `${formData.firstName} ${formData.lastName}`.trim(),
         phone: user?.phone || "+91 98765 43210",
@@ -85,14 +89,104 @@ export default function CheckoutPage() {
     };
 
     const res = await createOrder(orderData);
-    setIsSubmitting(false);
 
     if (res.success && res.order) {
-      clearCart();
-      router.push(`/orders/${res.order.orderNumber}`);
+      if (paymentMethod === "COD") {
+        clearCart();
+        setOrderSuccess(true);
+        setTimeout(() => {
+          router.push(`/orders/${res.order.orderNumber}`);
+        }, 3000);
+      } else {
+        // Razorpay flow
+        try {
+          const loadScript = () => {
+            return new Promise((resolve) => {
+              const script = document.createElement("script");
+              script.src = "https://checkout.razorpay.com/v1/checkout.js";
+              script.onload = () => resolve(true);
+              script.onerror = () => resolve(false);
+              document.body.appendChild(script);
+            });
+          };
+          
+          const scriptLoaded = await loadScript();
+          if (!scriptLoaded) {
+            alert("Razorpay SDK failed to load");
+            setIsSubmitting(false);
+            return;
+          }
+
+          const rzpRes = await fetch("/api/v1/payment/create-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ orderId: res.order._id })
+          });
+          
+          const rzpData = await rzpRes.json();
+          if (!rzpData.success) throw new Error("Failed to create Razorpay order");
+
+          const options = {
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock_key",
+            amount: rzpData.paymentOrder.amount,
+            currency: "INR",
+            name: "Orangered Studio",
+            description: "Checkout Payment",
+            order_id: rzpData.paymentOrder.id,
+            handler: async function (response) {
+              const verifyRes = await fetch("/api/v1/payment/verify", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  orderId: res.order._id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                  status: "Success"
+                })
+              });
+              const verifyData = await verifyRes.json();
+              
+              if (verifyData.success) {
+                clearCart();
+                setOrderSuccess(true);
+                setTimeout(() => {
+                  router.push(`/orders/${res.order.orderNumber}`);
+                }, 3000);
+              } else {
+                alert("Payment verification failed");
+              }
+            },
+            prefill: {
+              name: `${formData.firstName} ${formData.lastName}`,
+              email: formData.email,
+              contact: user?.phone || "9999999999"
+            },
+            theme: { color: "#FF4500" }
+          };
+          
+          const rzp = new window.Razorpay(options);
+          rzp.on('payment.failed', function (response) {
+             alert(response.error.description);
+          });
+          rzp.open();
+
+        } catch (error) {
+          console.error(error);
+          alert("Error initializing payment");
+        }
+      }
     } else {
       alert("Failed to create order. Please try again.");
     }
+    
+    setIsSubmitting(false);
   };
 
   if (items.length === 0) {
@@ -137,7 +231,20 @@ export default function CheckoutPage() {
       </section>
 
       {/* Checkout Content */}
-      <main className="py-12 px-6 md:px-16 max-w-[1440px] mx-auto w-full flex-grow">
+      <main className="py-12 px-6 md:px-16 max-w-[1440px] mx-auto w-full flex-grow relative">
+        {orderSuccess && (
+          <div className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center bg-surface/50 backdrop-blur-sm">
+            <Lottie 
+              animationData={require("@/assets/success_lottie.json")} 
+              loop={false} 
+              style={{ width: 400, height: 400 }} 
+            />
+            <div className="absolute mt-40 font-display text-3xl font-bold text-primary tracking-wider">
+              ORDER SUCCESSFUL!
+            </div>
+          </div>
+        )}
+        
         <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Form Steps */}
           <div className="lg:col-span-7 space-y-10">
@@ -241,84 +348,35 @@ export default function CheckoutPage() {
               </div>
 
               {/* Payment Type Tabs */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod("UPI")}
+                  onClick={() => setPaymentMethod("RAZORPAY")}
                   className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "UPI" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
+                    paymentMethod === "RAZORPAY" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
                   }`}
                 >
-                  UPI / GPAY / PHONEPE
+                  SECURE ONLINE PAYMENT (RAZORPAY)
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod("CARD")}
+                  onClick={() => setPaymentMethod("COD")}
                   className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "CARD" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
+                    paymentMethod === "COD" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
                   }`}
                 >
-                  DEBIT / CREDIT CARD
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("NETBANKING")}
-                  className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "NETBANKING" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
-                  }`}
-                >
-                  NETBANKING
+                  CASH ON DELIVERY (COD)
                 </button>
               </div>
 
-              {paymentMethod === "UPI" && (
-                <div className="space-y-3 pt-2">
-                  <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider">ENTER UPI ID / VPA</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.upiId}
-                    onChange={(e) => setFormData({ ...formData, upiId: e.target.value })}
-                    placeholder="e.g. username@okhdfcbank"
-                    className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary"
-                  />
+              {paymentMethod === "RAZORPAY" && (
+                <div className="space-y-3 pt-2 text-xs font-body text-on-surface-variant uppercase tracking-widest">
+                  YOU WILL BE REDIRECTED TO RAZORPAY SECURE GATEWAY TO COMPLETE YOUR TRANSACTION (UPI, CARDS, NETBANKING).
                 </div>
               )}
-
-              {paymentMethod === "CARD" && (
-                <div className="space-y-4 pt-2">
-                  <div>
-                    <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">CARD NUMBER</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.cardNumber}
-                      onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
-                      className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">EXPIRATION DATE</label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.expDate}
-                        onChange={(e) => setFormData({ ...formData, expDate: e.target.value })}
-                        className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-body font-bold text-on-surface-variant uppercase tracking-wider mb-2">CVV SECURITY CODE</label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.cvv}
-                        onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
-                        className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-xs font-body outline-none focus:border-primary"
-                      />
-                    </div>
-                  </div>
+              {paymentMethod === "COD" && (
+                <div className="space-y-3 pt-2 text-xs font-body text-on-surface-variant uppercase tracking-widest">
+                  PAY CASH TO THE DELIVERY EXECUTIVE UPON RECEIVING YOUR PARCEL.
                 </div>
               )}
             </div>

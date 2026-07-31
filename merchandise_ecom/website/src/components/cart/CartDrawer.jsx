@@ -3,6 +3,8 @@
 import { useCartStore } from "@/store/useCartStore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import Lottie from "lottie-react";
 
 export default function CartDrawer({ isOpen, onClose }) {
   const router = useRouter();
@@ -10,6 +12,16 @@ export default function CartDrawer({ isOpen, onClose }) {
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const subtotal = useCartStore((state) => state.getSubtotal());
+
+  const [playLottie, setPlayLottie] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && items.length > 0) {
+      setPlayLottie(true);
+      const timer = setTimeout(() => setPlayLottie(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -28,6 +40,17 @@ export default function CartDrawer({ isOpen, onClose }) {
 
       {/* Drawer Panel */}
       <div className="relative w-full max-w-md bg-surface text-on-surface h-full flex flex-col z-10 border-l border-outline-variant shadow-2xl">
+        {/* Lottie Animation Overlay */}
+        {playLottie && (
+          <div className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center">
+            <Lottie 
+              animationData={require("@/assets/success_lottie.json")} 
+              loop={false} 
+              style={{ width: 250, height: 250 }} 
+            />
+          </div>
+        )}
+        
         {/* Header */}
         <div className="p-6 border-b border-outline-variant/30 flex justify-between items-center bg-inverse-surface text-white">
           <div className="flex items-center space-x-3">
