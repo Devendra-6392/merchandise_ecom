@@ -17,6 +17,7 @@ const navSections = [
                 icon: <BoxIconLine />,
                 name: "Merchandise Catalog",
                 subItems: [
+                    { name: "Categories", path: "/categories" },
                     { name: "Products List", path: "/products" },
                     { name: "Add New Product", path: "/products/add" },
                 ],

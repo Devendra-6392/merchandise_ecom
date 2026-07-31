@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const PRODUCTS = [
   {
@@ -79,8 +79,25 @@ export const PRODUCTS = [
 
 export default function CollectionsGrid({ onQuickView, onAddToCart }) {
   const [activeCategory, setActiveCategory] = useState("ALL");
+  const [categories, setCategories] = useState(["ALL"]);
 
-  const categories = ["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/v1/categories");
+        const data = await res.json();
+        if (data.success && data.categories) {
+          const dynamicCategories = data.categories.map(c => c.name.toUpperCase());
+          setCategories(["ALL", ...dynamicCategories]);
+        }
+      } catch (err) {
+        console.error("Failed to load categories", err);
+        // Fallback to initial hardcoded if it fails, or just ALL
+        setCategories(["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"]);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const filteredProducts =
     activeCategory === "ALL"

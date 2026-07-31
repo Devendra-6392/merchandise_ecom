@@ -16,6 +16,7 @@ import ProductList from "./pages/Products/ProductList";
 import AddProduct from "./pages/Products/AddProduct";
 import OrderList from "./pages/Orders/OrderList";
 import OrderDetails from "./pages/Orders/OrderDetails";
+import CategoryList from "./pages/Categories/CategoryList";
 import BasicTables from "./pages/Tables/BasicTables";
 import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/add" element={<AddProduct />} />
           <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/categories" element={<CategoryList />} />
           <Route path="/basic-tables" element={<BasicTables />} />
           
           {/* Orders */}

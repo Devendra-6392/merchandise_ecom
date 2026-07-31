@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import { useAuth } from "../../context/AuthContext";
 
-const CATEGORIES = ["T-Shirts", "Hoodies", "Caps", "Mugs", "Bottles", "Tote Bags", "Stickers"];
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
 const ALL_PRINT_TYPES = ["Screen Printing", "DTF Printing", "Sublimation", "Embroidery", "UV Printing"];
 
@@ -12,10 +11,13 @@ export default function AddProduct() {
   const navigate = useNavigate();
   const { token } = useAuth();
 
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("T-Shirts");
+  const [category, setCategory] = useState("");
   const [basePrice, setBasePrice] = useState("");
   const [stockQuantity, setStockQuantity] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -25,6 +27,24 @@ export default function AddProduct() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/v1/categories");
+        const data = await res.json();
+        if (data.success && data.categories.length > 0) {
+          setCategories(data.categories);
+          setCategory(data.categories[0].name);
+        }
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const toggleSize = (size) => {
     setAvailableSizes((prev) =>
@@ -164,12 +184,19 @@ export default function AddProduct() {
                 className="w-full px-3.5 py-2.5 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-brand-500"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
+                disabled={categoriesLoading}
               >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
+                {categoriesLoading ? (
+                  <option>Loading categories...</option>
+                ) : categories.length === 0 ? (
+                  <option value="">No Categories Available</option>
+                ) : (
+                  categories.map((cat) => (
+                    <option key={cat._id} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
             <div>
