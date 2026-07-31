@@ -10,10 +10,29 @@ import { useOrderStore } from "@/store/useOrderStore";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, isAuthenticated, logout, loading: authLoading } = useAuthStore();
+  const { user, isAuthenticated, logout, loading: authLoading, updateProfile } = useAuthStore();
   const { orders, fetchMyOrders } = useOrderStore();
 
   const [activeTab, setActiveTab] = useState("ORDERS");
+  
+  // Profile edit state
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    name: "",
+    phone: "",
+    address: ""
+  });
+  const [saveLoading, setSaveLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        name: user.name || "",
+        phone: user.phone || "",
+        address: user.address || ""
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,6 +43,19 @@ export default function ProfilePage() {
   const handleSignOut = () => {
     logout();
     router.push("/login");
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setSaveLoading(true);
+    const res = await updateProfile(profileForm);
+    setSaveLoading(false);
+    if (res.success) {
+      setIsEditing(false);
+      // We could add a toast here in the future
+    } else {
+      alert(res.error || "Failed to update profile.");
+    }
   };
 
   if (authLoading) {
@@ -136,7 +168,7 @@ export default function ProfilePage() {
                 : "text-on-surface-variant hover:text-on-surface"
             }`}
           >
-            SAVED ATELIER ADDRESSES
+            PROFILE & ADDRESSES
           </button>
           <button
             onClick={() => setActiveTab("SETTINGS")}
@@ -229,19 +261,94 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Tab 2: Saved Addresses */}
+        {/* Tab 2: Profile & Saved Addresses */}
         {activeTab === "ADDRESSES" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-surface-container-lowest p-6 border border-outline-variant/30 space-y-3">
+          <div className="max-w-2xl bg-surface-container-lowest p-8 border border-outline-variant/30">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-outline-variant/20">
               <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest inline-block">
-                PRIMARY DISPATCH ADDRESS
+                PRIMARY DISPATCH & CONTACT
               </span>
-              <h3 className="font-display text-lg font-bold text-on-surface">{(user?.name || "DEVENDRA BHATT").toUpperCase()}</h3>
-              <p className="font-body text-xs text-on-surface-variant leading-relaxed">
-                {user?.address || "Flat 402, Orangered Residency, Bandra West, Mumbai, Maharashtra, 400050, India"}
-              </p>
-              <button className="font-body text-xs font-bold text-primary hover:underline uppercase cursor-pointer">EDIT ADDRESS</button>
+              {!isEditing && (
+                <button 
+                  onClick={() => setIsEditing(true)}
+                  className="font-body text-xs font-bold text-primary hover:underline uppercase cursor-pointer"
+                >
+                  EDIT PROFILE
+                </button>
+              )}
             </div>
+
+            {isEditing ? (
+              <form onSubmit={handleSaveProfile} className="space-y-6">
+                <div>
+                  <label className="block text-xs font-body font-bold text-on-surface tracking-widest uppercase mb-2">FULL NAME</label>
+                  <input 
+                    type="text" 
+                    value={profileForm.name}
+                    onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                    className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-sm font-body text-on-surface focus:outline-none focus:border-primary transition-colors"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-body font-bold text-on-surface tracking-widest uppercase mb-2">PHONE NUMBER</label>
+                  <input 
+                    type="text" 
+                    value={profileForm.phone}
+                    onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                    className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-sm font-body text-on-surface focus:outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-body font-bold text-on-surface tracking-widest uppercase mb-2">SHIPPING ADDRESS</label>
+                  <textarea 
+                    value={profileForm.address}
+                    onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
+                    rows={4}
+                    className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-sm font-body text-on-surface focus:outline-none focus:border-primary transition-colors resize-none"
+                  />
+                </div>
+                
+                <div className="flex gap-4 pt-4 border-t border-outline-variant/20">
+                  <button 
+                    type="submit" 
+                    disabled={saveLoading}
+                    className="bg-primary text-white px-8 py-3 font-body text-xs font-bold tracking-[0.15em] uppercase hover:bg-primary-container transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {saveLoading ? "SAVING..." : "SAVE CHANGES"}
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsEditing(false)}
+                    disabled={saveLoading}
+                    className="bg-surface-container-high text-on-surface px-8 py-3 font-body text-xs font-bold tracking-[0.15em] uppercase hover:bg-surface-container-highest transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    CANCEL
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">CLIENT NAME</span>
+                  <h3 className="font-display text-xl font-bold text-on-surface">{(user?.name || "GUEST CLIENT").toUpperCase()}</h3>
+                </div>
+                <div>
+                  <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">REGISTERED EMAIL</span>
+                  <p className="font-body text-base text-on-surface">{user?.email}</p>
+                </div>
+                <div>
+                  <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">CONTACT NUMBER</span>
+                  <p className="font-body text-base text-on-surface">{user?.phone || "NOT PROVIDED"}</p>
+                </div>
+                <div>
+                  <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">DEFAULT SHIPPING ADDRESS</span>
+                  <p className="font-body text-base text-on-surface leading-relaxed max-w-md">
+                    {user?.address || "NO ADDRESS SAVED"}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

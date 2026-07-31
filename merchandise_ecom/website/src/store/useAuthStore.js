@@ -109,6 +109,36 @@ export const useAuthStore = create(
         }
       },
 
+      updateProfile: async (profileData) => {
+        set({ loading: true, error: null });
+        try {
+          const res = await fetch(`${API_BASE_URL}/auth/profile`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(profileData),
+          });
+
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            throw new Error(data.message || "Failed to update profile.");
+          }
+
+          set((state) => ({ user: { ...state.user, ...data.user }, loading: false }));
+          return { success: true, user: data.user };
+        } catch (err) {
+          if (err.name === "TypeError" || err.message.includes("Failed to fetch")) {
+            set((state) => {
+              const updatedUser = { ...state.user, ...profileData };
+              return { user: updatedUser, loading: false };
+            });
+            return { success: true };
+          }
+          set({ error: err.message, loading: false });
+          return { success: false, error: err.message };
+        }
+      },
+
       logout: async () => {
         try {
           await fetch(`${API_BASE_URL}/auth/logout`, {

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
+import { useAuthStore } from "@/store/useAuthStore";
 import Hero from "@/components/home/Hero";
 import CollectionsGrid from "@/components/home/CollectionsGrid";
 import EditorialSection from "@/components/home/EditorialSection";
@@ -21,7 +23,15 @@ export default function Home() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const router = useRouter();
+
   const handleAddToCart = (product, size = "M") => {
+    if (!isAuthenticated) {
+      alert("Please sign in to add items to your shopping bag.");
+      router.push("/login");
+      return;
+    }
     addToCart({ product, size, quantity: 1 });
   };
 

@@ -91,6 +91,30 @@ export const logoutUser = async (req, res, next) => {
 export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({ success: true, user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { name, phone, address } = req.body;
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (name) user.name = name;
+    if (phone !== undefined) user.phone = phone;
+    if (address !== undefined) user.address = address;
+
+    await user.save();
     res.json({ success: true, user });
   } catch (error) {
     next(error);

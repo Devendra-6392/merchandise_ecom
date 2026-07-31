@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { PRODUCTS } from "@/components/home/CollectionsGrid";
 import { useCartStore } from "@/store/useCartStore";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -21,9 +22,8 @@ export default function ProductDetailPage({ params }) {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("SPECS");
 
-  const isCartOpen = useCartStore((state) => state.isCartOpen);
-  const setCartOpen = useCartStore((state) => state.setCartOpen);
-  const addToCart = useCartStore((state) => state.addToCart);
+  const { isCartOpen, setCartOpen, addToCart } = useCartStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const images = [
     product.image,
@@ -33,6 +33,11 @@ export default function ProductDetailPage({ params }) {
   ];
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      alert("Please sign in to add items to your shopping bag.");
+      router.push("/login");
+      return;
+    }
     addToCart({
       product,
       size: selectedSize,
@@ -41,6 +46,11 @@ export default function ProductDetailPage({ params }) {
   };
 
   const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      alert("Please sign in to proceed to checkout.");
+      router.push("/login");
+      return;
+    }
     handleAddToCart();
     router.push("/checkout");
   };
