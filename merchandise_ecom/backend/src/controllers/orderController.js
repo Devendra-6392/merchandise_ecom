@@ -1,6 +1,7 @@
 import { Order, ORDER_STATUSES } from '../models/Order.js';
 import { Cart } from '../models/Cart.js';
 import { Product } from '../models/Product.js';
+import { sendEmail } from '../utils/sendEmail.js';
 
 export const createOrder = async (req, res, next) => {
   try {
@@ -52,6 +53,22 @@ export const createOrder = async (req, res, next) => {
     cart.items = [];
     cart.calculateTotals();
     await cart.save();
+
+    // Send confirmation email
+    const emailHtml = `
+      <h1>Order Confirmation</h1>
+      <p>Dear ${req.user.name},</p>
+      <p>Thank you for your order! Your order <strong>${orderNumber}</strong> has been successfully placed.</p>
+      <p><strong>Total Amount:</strong> ₹${order.billingSummary.grandTotal}</p>
+      <p>We will notify you when your order is processed.</p>
+      <p>Best regards,<br>MerchStudio Team</p>
+    `;
+
+    await sendEmail({
+      to: req.user.email,
+      subject: `Order Confirmation - ${orderNumber}`,
+      html: emailHtml,
+    });
 
     res.status(201).json({ success: true, order });
   } catch (error) {
@@ -124,6 +141,25 @@ export const updateOrderStatus = async (req, res, next) => {
     });
 
     await order.save();
+
+    // Populate customer to get email
+    await order.populate('customer', 'name email');
+
+    // Send status update email
+    const emailHtml = `
+      <h1>Order Update</h1>
+      <p>Dear ${order.customer.name},</p>
+      <p>Your order <strong>${order.orderNumber}</strong> status has been updated to: <strong>${status}</strong>.</p>
+      <p><strong>Note:</strong> ${note || `Status advanced to ${status}`}</p>
+      <p>Best regards,<br>MerchStudio Team</p>
+    `;
+
+    await sendEmail({
+      to: order.customer.email,
+      subject: `Order Update - ${order.orderNumber}`,
+      html: emailHtml,
+    });
+
     res.json({ success: true, message: `Order status updated to ${status}`, order });
   } catch (error) {
     next(error);
