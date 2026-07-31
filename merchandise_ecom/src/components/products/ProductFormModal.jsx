@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const CATEGORIES = ["T-Shirts", "Hoodies", "Caps", "Mugs", "Bottles", "Tote Bags", "Stickers"];
+const CATEGORIES = ["T-Shirts", "Hoodies", "Caps", "Mugs", "Bottles", "Tote Bags", "Stickers", "Outerwear", "Coats", "Pants", "Tailoring", "Tops"];
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
 const ALL_PRINT_TYPES = ["Screen Printing", "DTF Printing", "Sublimation", "Embroidery", "UV Printing"];
 
@@ -12,6 +12,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product = nu
   const [basePrice, setBasePrice] = useState("");
   const [stockQuantity, setStockQuantity] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [hoverImageUrl, setHoverImageUrl] = useState("");
   const [availableSizes, setAvailableSizes] = useState(["S", "M", "L", "XL"]);
   const [allowedPrintTypes, setAllowedPrintTypes] = useState(["DTF Printing", "Screen Printing"]);
 
@@ -24,10 +25,11 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product = nu
       setSku(product.sku || "");
       setDescription(product.description || "");
       setCategory(product.category || "T-Shirts");
-      setBasePrice(product.basePrice !== undefined ? product.basePrice : "");
+      setBasePrice(product.price !== undefined ? product.price : (product.basePrice !== undefined ? product.basePrice : ""));
       setStockQuantity(product.stockQuantity !== undefined ? product.stockQuantity : "");
-      setImageUrl(product.images && product.images[0] ? product.images[0] : "");
-      setAvailableSizes(product.availableSizes || ["S", "M", "L", "XL"]);
+      setImageUrl(product.image || (product.images && product.images[0] ? product.images[0] : ""));
+      setHoverImageUrl(product.hoverImage || (product.images && product.images[1] ? product.images[1] : ""));
+      setAvailableSizes(product.sizes || product.availableSizes || ["S", "M", "L", "XL"]);
       setAllowedPrintTypes(product.allowedPrintTypes || ["DTF Printing"]);
     } else {
       setName("");
@@ -37,6 +39,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product = nu
       setBasePrice("");
       setStockQuantity("");
       setImageUrl("");
+      setHoverImageUrl("");
       setAvailableSizes(["S", "M", "L", "XL"]);
       setAllowedPrintTypes(["DTF Printing", "Screen Printing"]);
     }
@@ -77,14 +80,22 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product = nu
       return;
     }
 
+    const primaryImg = imageUrl || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=85";
+    const hoverImg = hoverImageUrl || primaryImg;
+    const priceVal = Number(basePrice);
+
     const payload = {
       name,
       sku: sku.toUpperCase(),
       description: description || `${name} - Custom Merchandise`,
       category,
-      basePrice: Number(basePrice),
+      price: priceVal,
+      basePrice: priceVal,
       stockQuantity: Number(stockQuantity),
-      images: [imageUrl || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80"],
+      image: primaryImg,
+      hoverImage: hoverImg,
+      images: [primaryImg, hoverImg],
+      sizes: availableSizes,
       availableSizes,
       allowedPrintTypes,
     };
@@ -217,17 +228,31 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product = nu
             </div>
           </div>
 
-          <div>
-            <label className="block mb-1 text-xs font-semibold uppercase text-gray-700 dark:text-gray-300">
-              Image URL
-            </label>
-            <input
-              type="url"
-              className="w-full px-3 py-2 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm"
-              placeholder="https://images.unsplash.com/..."
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-            />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block mb-1 text-xs font-semibold uppercase text-gray-700 dark:text-gray-300">
+                Primary Image URL
+              </label>
+              <input
+                type="url"
+                className="w-full px-3 py-2 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm"
+                placeholder="https://images.unsplash.com/..."
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-xs font-semibold uppercase text-gray-700 dark:text-gray-300">
+                Hover Image URL (Angle / Secondary)
+              </label>
+              <input
+                type="url"
+                className="w-full px-3 py-2 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm"
+                placeholder="https://images.unsplash.com/..."
+                value={hoverImageUrl}
+                onChange={(e) => setHoverImageUrl(e.target.value)}
+              />
+            </div>
           </div>
 
           <div>

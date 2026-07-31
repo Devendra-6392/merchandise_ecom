@@ -191,7 +191,7 @@ export default function ProductListTable() {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <img
-                        src={p.images && p.images[0] ? p.images[0] : "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80"}
+                        src={p.image || (p.images && p.images[0]) || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80"}
                         alt={p.name}
                         className="w-11 h-11 rounded-lg object-cover border border-gray-200 dark:border-gray-700 shrink-0"
                       />
@@ -214,7 +214,7 @@ export default function ProductListTable() {
                     </span>
                   </td>
                   <td className="px-4 py-4 font-bold text-gray-900 dark:text-white text-xs">
-                    ₹{p.basePrice}
+                    ₹{(p.price ?? p.basePrice ?? 0).toLocaleString("en-IN")}
                   </td>
                   <td className="px-4 py-4">
                     {p.stockQuantity > 0 ? (
