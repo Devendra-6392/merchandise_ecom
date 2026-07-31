@@ -7,6 +7,7 @@ export const useAuthStore = create(
   persist(
     (set, get) => ({
       user: null,
+      token: null,
       loading: false,
       error: null,
       isAuthenticated: false,
@@ -15,8 +16,12 @@ export const useAuthStore = create(
 
       verifySession: async () => {
         try {
+          const currentToken = get().token;
           const res = await fetch(`${API_BASE_URL}/auth/me`, {
             method: "GET",
+            headers: {
+              ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {})
+            },
             credentials: "include",
           });
 
@@ -49,7 +54,7 @@ export const useAuthStore = create(
             throw new Error(data.message || "Invalid credentials.");
           }
 
-          set({ user: data.user, isAuthenticated: true, loading: false });
+          set({ user: data.user, token: data.token, isAuthenticated: true, loading: false });
           return { success: true, user: data.user };
         } catch (err) {
           // Development / Offline fallback
@@ -88,7 +93,7 @@ export const useAuthStore = create(
             throw new Error(data.message || "Registration failed.");
           }
 
-          set({ user: data.user, isAuthenticated: true, loading: false });
+          set({ user: data.user, token: data.token, isAuthenticated: true, loading: false });
           return { success: true, user: data.user };
         } catch (err) {
           if (err.name === "TypeError" || err.message.includes("Failed to fetch")) {
@@ -112,9 +117,13 @@ export const useAuthStore = create(
       updateProfile: async (profileData) => {
         set({ loading: true, error: null });
         try {
+          const currentToken = get().token;
           const res = await fetch(`${API_BASE_URL}/auth/profile`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {})
+            },
             credentials: "include",
             body: JSON.stringify(profileData),
           });
@@ -148,14 +157,14 @@ export const useAuthStore = create(
         } catch (err) {
           console.warn("Logout notice:", err);
         } finally {
-          set({ user: null, isAuthenticated: false, error: null });
+          set({ user: null, token: null, isAuthenticated: false, error: null });
         }
       },
     }),
     {
       name: "custom-merch-auth-storage",
       storage: createJSONStorage(() => (typeof window !== "undefined" ? window.localStorage : undefined)),
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
     }
-  )
+  );
 );

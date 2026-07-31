@@ -69,17 +69,22 @@ export default function CheckoutPage() {
         country: formData.country,
         pincode: formData.zip,
       },
-      items: items.map((i) => ({
-        productName: i.product?.name || "Garment",
-        quantity: i.quantity,
-        selectedSize: i.size,
-        selectedColor: i.color,
-        selectedPrintType: i.printType,
-        printLocation: i.printLocation,
-        artworkUrl: i.artworkUrl,
-        unitPrice: i.unitPrice,
-        totalItemPrice: i.totalItemPrice,
-      })),
+      items: items.map((i) => {
+        const uPrice = Number(i.unitPrice || i.product?.price || i.product?.basePrice || 0);
+        const qty = Number(i.quantity || 1);
+        return {
+          product: i.product?.id || i.product?._id,
+          productName: i.product?.name || i.name || "Custom Garment",
+          quantity: qty,
+          selectedSize: i.size || "M",
+          selectedColor: i.color || "Standard",
+          selectedPrintType: i.printType || "Screen Printing",
+          printLocation: i.printLocation || "Front",
+          artworkUrl: i.artworkUrl || "",
+          unitPrice: uPrice,
+          totalItemPrice: Number(i.totalItemPrice || (uPrice * qty)),
+        };
+      }),
       billingSummary: {
         subtotal: subtotal,
         discountAmount: discountAmount,
@@ -189,6 +194,29 @@ export default function CheckoutPage() {
     setIsSubmitting(false);
   };
 
+  if (orderSuccess) {
+    return (
+      <div className="min-h-screen flex flex-col bg-surface text-on-surface">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center py-24 text-center px-6">
+          <div className="space-y-6 max-w-md bg-surface-container-lowest p-8 border border-primary/30 rounded-2xl shadow-2xl">
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto">
+              <span className="material-symbols-outlined text-4xl">check_circle</span>
+            </div>
+            <h1 className="font-display text-3xl font-bold text-on-surface">ORDER CONFIRMED!</h1>
+            <p className="font-body text-xs text-on-surface-variant uppercase tracking-wider">
+              YOUR MERCHANDISE ORDER HAS BEEN PLACED & SAVED IN DATABASE.
+            </p>
+            <div className="pt-2 text-xs font-semibold text-primary animate-pulse tracking-widest uppercase">
+              REDIRECTING TO ORDER TRACKING...
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen flex flex-col bg-surface text-on-surface">
@@ -232,18 +260,6 @@ export default function CheckoutPage() {
 
       {/* Checkout Content */}
       <main className="py-12 px-6 md:px-16 max-w-[1440px] mx-auto w-full flex-grow relative">
-        {orderSuccess && (
-          <div className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center bg-surface/50 backdrop-blur-sm">
-            <Lottie 
-              animationData={require("@/assets/success_lottie.json")} 
-              loop={false} 
-              style={{ width: 400, height: 400 }} 
-            />
-            <div className="absolute mt-40 font-display text-3xl font-bold text-primary tracking-wider">
-              ORDER SUCCESSFUL!
-            </div>
-          </div>
-        )}
         
         <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Form Steps */}

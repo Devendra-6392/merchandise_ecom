@@ -15,16 +15,16 @@ export const ORDER_STATUSES = [
 ];
 
 const orderItemSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
   productName: { type: String, required: true },
-  quantity: { type: Number, required: true, min: 1 },
-  selectedSize: { type: String, required: true },
-  selectedColor: { type: String, required: true },
-  selectedPrintType: { type: String, required: true },
-  printLocation: { type: String, required: true },
-  artworkUrl: { type: String },
-  unitPrice: { type: Number, required: true },
-  totalItemPrice: { type: Number, required: true }
+  quantity: { type: Number, required: true, min: 1, default: 1 },
+  selectedSize: { type: String, default: 'M' },
+  selectedColor: { type: String, default: 'Standard' },
+  selectedPrintType: { type: String, default: 'Screen Printing' },
+  printLocation: { type: String, default: 'Front' },
+  artworkUrl: { type: String, default: '' },
+  unitPrice: { type: Number, required: true, default: 0 },
+  totalItemPrice: { type: Number, required: true, default: 0 }
 });
 
 const timelineEntrySchema = new mongoose.Schema({
@@ -43,16 +43,16 @@ const orderSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     street: { type: String, required: true },
     city: { type: String, required: true },
-    state: { type: String, required: true },
+    state: { type: String, default: 'Maharashtra' },
     pincode: { type: String, required: true },
     country: { type: String, default: 'India' }
   },
   billingSummary: {
-    subtotal: { type: Number, required: true },
-    taxAmount: { type: Number, required: true },
-    shippingCharge: { type: Number, required: true },
+    subtotal: { type: Number, required: true, default: 0 },
+    taxAmount: { type: Number, default: 0 },
+    shippingCharge: { type: Number, default: 0 },
     discountAmount: { type: Number, default: 0 },
-    grandTotal: { type: Number, required: true }
+    grandTotal: { type: Number, required: true, default: 0 }
   },
   currentStatus: {
     type: String,

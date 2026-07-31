@@ -2,19 +2,44 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useAdminStore } from "@/store/useAdminStore";
 import { useOrderStore } from "@/store/useOrderStore";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
+  const { user, isAuthenticated, loading: authLoading } = useAuthStore();
   const { stats, lowStockProducts, fetchDashboardStats, restockProduct, loading } = useAdminStore();
   const { orders, fetchMyOrders } = useOrderStore();
 
   useEffect(() => {
-    fetchDashboardStats();
-    fetchMyOrders();
-  }, [fetchDashboardStats, fetchMyOrders]);
+    if (!authLoading && (!isAuthenticated || user?.role !== "admin")) {
+      alert("Admin authorization required to access dashboard.");
+      router.push("/login");
+      return;
+    }
+
+    if (isAuthenticated && user?.role === "admin") {
+      fetchDashboardStats();
+      fetchMyOrders();
+    }
+  }, [authLoading, isAuthenticated, user, router, fetchDashboardStats, fetchMyOrders]);
+
+  if (authLoading || !isAuthenticated || user?.role !== "admin") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+          <span className="font-body text-xs font-bold tracking-widest uppercase">
+            VERIFYING ADMIN PRIVILEGES...
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   const metrics = [
     {

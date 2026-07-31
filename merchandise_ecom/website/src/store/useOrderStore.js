@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { useAuthStore } from "./useAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
@@ -65,9 +66,13 @@ export const useOrderStore = create(
 
       fetchMyOrders: async () => {
         set({ loading: true, error: null });
+        const token = useAuthStore.getState().token;
         try {
           const res = await fetch(`${API_BASE_URL}/orders/my-orders`, {
             method: "GET",
+            headers: {
+              ...(token ? { Authorization: `Bearer ${token}` } : {})
+            },
             credentials: "include",
           });
           const data = await res.json();
@@ -84,6 +89,7 @@ export const useOrderStore = create(
 
       fetchOrderById: async (orderIdOrNumber) => {
         set({ loading: true, error: null });
+        const token = useAuthStore.getState().token;
 
         const existing = get().orders.find(
           (o) => o._id === orderIdOrNumber || o.orderNumber === orderIdOrNumber
@@ -92,6 +98,9 @@ export const useOrderStore = create(
         try {
           const res = await fetch(`${API_BASE_URL}/orders/${orderIdOrNumber}`, {
             method: "GET",
+            headers: {
+              ...(token ? { Authorization: `Bearer ${token}` } : {})
+            },
             credentials: "include",
           });
           const data = await res.json();
@@ -116,6 +125,7 @@ export const useOrderStore = create(
 
       createOrder: async (orderData) => {
         set({ loading: true, error: null });
+        const token = useAuthStore.getState().token;
 
         const orderNumber = `ORD-${Date.now().toString().slice(-6)}-${Math.floor(1000 + Math.random() * 9000)}`;
         const newOrder = {
@@ -149,7 +159,10 @@ export const useOrderStore = create(
         try {
           const res = await fetch(`${API_BASE_URL}/orders`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {})
+            },
             credentials: "include",
             body: JSON.stringify(orderData),
           });
@@ -161,6 +174,8 @@ export const useOrderStore = create(
               loading: false,
             }));
             return { success: true, order: data.order };
+          } else if (data.message) {
+            console.warn("Create order backend notice:", data.message);
           }
         } catch (err) {
           console.warn("Create order API notice:", err.message);

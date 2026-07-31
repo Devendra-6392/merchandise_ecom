@@ -32,7 +32,11 @@ export default function SignInForm() {
     setIsSubmitting(false);
 
     if (result.success) {
-      navigate("/");
+      if (result.user?.role !== "admin") {
+        setFormError("Access Denied: Account does not have administrator privileges.");
+      } else {
+        navigate("/");
+      }
     } else {
       setFormError(result.error || "Failed to sign in. Please check your credentials.");
     }

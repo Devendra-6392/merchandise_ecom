@@ -175,26 +175,35 @@ export default function OrderDetails() {
               </span>
             </div>
             
-            {order.currentStatus !== 'Cancelled' && order.currentStatus !== 'Delivered' && (
-              <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                {nextStatus && (
-                  <button 
-                    onClick={() => handleStatusUpdate(nextStatus)}
-                    disabled={updating}
-                    className="w-full py-2 px-4 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
-                  >
-                    Advance to: {nextStatus}
-                  </button>
-                )}
-                <button 
-                  onClick={() => handleStatusUpdate('Cancelled')}
+            <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <div>
+                <label className="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1">
+                  Update Order Status
+                </label>
+                <select
+                  value={order.currentStatus}
+                  onChange={(e) => handleStatusUpdate(e.target.value)}
                   disabled={updating}
-                  className="w-full py-2 px-4 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium rounded-lg transition disabled:opacity-50"
+                  className="w-full px-3 py-2 text-sm border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white font-medium"
                 >
-                  Cancel Order
-                </button>
+                  {ORDER_STATUSES.map((st) => (
+                    <option key={st} value={st}>
+                      {st}
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
+
+              {nextStatus && (
+                <button 
+                  onClick={() => handleStatusUpdate(nextStatus)}
+                  disabled={updating}
+                  className="w-full py-2 px-4 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
+                >
+                  Advance to: {nextStatus}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Customer Info */}
