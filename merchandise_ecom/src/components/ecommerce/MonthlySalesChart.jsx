@@ -5,7 +5,7 @@ import { MoreDotIcon } from "../../icons";
 import { useState } from "react";
 export default function MonthlySalesChart() {
     const options = {
-        colors: ["#465fff"],
+        colors: ["#FF5424"],
         chart: {
             fontFamily: "Outfit, sans-serif",
             type: "bar",

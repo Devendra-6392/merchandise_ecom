@@ -6,7 +6,7 @@ import { MoreDotIcon } from "../../icons";
 export default function MonthlyTarget() {
     const series = [75.55];
     const options = {
-        colors: ["#465FFF"],
+        colors: ["#FF5424"],
         chart: {
             fontFamily: "Outfit, sans-serif",
             type: "radialBar",
@@ -45,7 +45,7 @@ export default function MonthlyTarget() {
         },
         fill: {
             type: "solid",
-            colors: ["#465FFF"],
+            colors: ["#FF5424"],
         },
         stroke: {
             lineCap: "round",

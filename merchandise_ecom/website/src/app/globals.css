@@ -2,10 +2,10 @@
 
 @layer base {
   :root {
-    --primary: #ad2c00;
-    --primary-container: #d83900;
-    --primary-fixed: #ffdbd1;
-    --primary-fixed-dim: #ffb5a0;
+    --primary: #ff5424;
+    --primary-container: #ff7043;
+    --primary-fixed: #ffdcd1;
+    --primary-fixed-dim: #ffbaa8;
     --on-primary: #ffffff;
     
     --surface: #f9f9f9;
@@ -21,7 +21,7 @@
     --background: #f9f9f9;
     --on-background: #1a1c1c;
     --on-surface: #1a1c1c;
-    --on-surface-variant: #5d4038;
+    --on-surface-variant: #6e4135;
     
     --secondary: #5f5e5e;
     --secondary-container: #e2dfde;
@@ -30,10 +30,10 @@
     
     --inverse-surface: #2f3131;
     --inverse-on-surface: #f0f1f1;
-    --inverse-primary: #ffb5a0;
+    --inverse-primary: #ffbaa8;
     
-    --outline: #926f66;
-    --outline-variant: #e7bdb2;
+    --outline: #e66a48;
+    --outline-variant: #ffccbd;
     
     --tertiary: #655b47;
     --tertiary-container: #7f735f;
@@ -45,10 +45,10 @@
 }
 
 @theme {
-  --color-primary: #ad2c00;
-  --color-primary-container: #d83900;
-  --color-primary-fixed: #ffdbd1;
-  --color-primary-fixed-dim: #ffb5a0;
+  --color-primary: #ff5424;
+  --color-primary-container: #ff7043;
+  --color-primary-fixed: #ffdcd1;
+  --color-primary-fixed-dim: #ffbaa8;
   --color-on-primary: #ffffff;
   
   --color-surface: #f9f9f9;
@@ -64,7 +64,7 @@
   --color-background: #f9f9f9;
   --color-on-background: #1a1c1c;
   --color-on-surface: #1a1c1c;
-  --color-on-surface-variant: #5d4038;
+  --color-on-surface-variant: #6e4135;
   
   --color-secondary: #5f5e5e;
   --color-secondary-container: #e2dfde;
@@ -73,10 +73,10 @@
   
   --color-inverse-surface: #2f3131;
   --color-inverse-on-surface: #f0f1f1;
-  --color-inverse-primary: #ffb5a0;
+  --color-inverse-primary: #ffbaa8;
   
-  --color-outline: #926f66;
-  --color-outline-variant: #e7bdb2;
+  --color-outline: #e66a48;
+  --color-outline-variant: #ffccbd;
   
   --color-tertiary: #655b47;
   --color-tertiary-container: #7f735f;
@@ -144,7 +144,7 @@ body {
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #ad2c00;
+  background-color: #ff5424;
   transition: width 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
@@ -159,5 +159,5 @@ body {
   background: #f9f9f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #ad2c00;
+  background: #ff5424;
 }
