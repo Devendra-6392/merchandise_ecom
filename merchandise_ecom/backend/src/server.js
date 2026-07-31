@@ -16,6 +16,8 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import shippingRoutes from './routes/shippingRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import { v2 as cloudinary } from 'cloudinary';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +27,13 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
 const app = express();
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Connect to MongoDB Database
 connectDB();
@@ -57,6 +66,7 @@ app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/shipping', shippingRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/upload', uploadRoutes);
 
 // Error Handling Middleware
 app.use(notFound);

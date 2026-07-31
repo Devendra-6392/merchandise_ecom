@@ -20,7 +20,10 @@ export default function AddProduct() {
   const [category, setCategory] = useState("");
   const [basePrice, setBasePrice] = useState("");
   const [stockQuantity, setStockQuantity] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [hoverImageFile, setHoverImageFile] = useState(null);
+  const [badge, setBadge] = useState("");
+  const [specs, setSpecs] = useState("");
   const [availableSizes, setAvailableSizes] = useState(["S", "M", "L", "XL"]);
   const [allowedPrintTypes, setAllowedPrintTypes] = useState(["DTF Printing", "Screen Printing"]);
 
@@ -63,25 +66,50 @@ export default function AddProduct() {
     setError("");
     setSuccess(false);
 
-    if (!name || !sku || !basePrice || !stockQuantity) {
-      setError("Please fill in all required fields (Name, SKU, Base Price, Stock Quantity).");
+    if (!name || !sku || !basePrice || !stockQuantity || !imageFile || !hoverImageFile) {
+      setError("Please fill in all required fields, including both images.");
       return;
     }
 
-    const payload = {
-      name,
-      sku: sku.toUpperCase(),
-      description: description || `${name} - Custom Merchandise`,
-      category,
-      basePrice: Number(basePrice),
-      stockQuantity: Number(stockQuantity),
-      images: [imageUrl || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80"],
-      availableSizes,
-      allowedPrintTypes,
-    };
-
     setLoading(true);
     try {
+      // Upload main image
+      const formData1 = new FormData();
+      formData1.append("image", imageFile);
+      const uploadRes1 = await fetch("/api/v1/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData1,
+      });
+      const uploadData1 = await uploadRes1.json();
+      if (!uploadRes1.ok) throw new Error(uploadData1.message || "Failed to upload image");
+
+      // Upload hover image
+      const formData2 = new FormData();
+      formData2.append("image", hoverImageFile);
+      const uploadRes2 = await fetch("/api/v1/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData2,
+      });
+      const uploadData2 = await uploadRes2.json();
+      if (!uploadRes2.ok) throw new Error(uploadData2.message || "Failed to upload hover image");
+
+      const payload = {
+        name,
+        sku: sku.toUpperCase(),
+        description: description || `${name} - Custom Merchandise`,
+        category,
+        price: Number(basePrice),
+        stockQuantity: Number(stockQuantity),
+        image: uploadData1.url,
+        hoverImage: uploadData2.url,
+        badge,
+        sizes: availableSizes,
+        specs: specs.split('\n').filter(s => s.trim() !== ""),
+        allowedPrintTypes,
+      };
+
       const res = await fetch("/api/v1/products", {
         method: "POST",
         headers: {
@@ -229,29 +257,70 @@ export default function AddProduct() {
             </div>
           </div>
 
-          <div>
-            <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-              Product Image URL
-            </label>
-            <input
-              type="url"
-              className="w-full px-3.5 py-2.5 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-brand-500"
-              placeholder="https://images.unsplash.com/..."
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-            />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div>
+              <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                Main Image (Cloudinary) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                className="w-full px-3.5 py-2.5 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-brand-500"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                Hover Image (Cloudinary) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                className="w-full px-3.5 py-2.5 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-brand-500"
+                onChange={(e) => setHoverImageFile(e.target.files[0])}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div>
+              <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                Badge
+              </label>
+              <input
+                type="text"
+                className="w-full px-3.5 py-2.5 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-brand-500"
+                placeholder="e.g. LIMITED / 50 PCS"
+                value={badge}
+                onChange={(e) => setBadge(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                Description
+              </label>
+              <textarea
+                rows="3"
+                className="w-full px-3.5 py-2.5 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-brand-500"
+                placeholder="Enter product description..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              ></textarea>
+            </div>
           </div>
 
           <div>
             <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-              Description
+              Specifications (One per line)
             </label>
             <textarea
-              rows="3"
+              rows="4"
               className="w-full px-3.5 py-2.5 border rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-brand-500"
-              placeholder="Enter product specifications, fabric info, print details..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              placeholder="100% Organic Cotton&#10;Crafted in Mumbai&#10;Preshrunk"
+              value={specs}
+              onChange={(e) => setSpecs(e.target.value)}
             ></textarea>
           </div>
 

@@ -15,22 +15,51 @@ export default function ProductDetailPage({ params }) {
   const router = useRouter();
   const productId = resolvedParams.id;
 
-  const product = PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [selectedImage, setSelectedImage] = useState(product.image);
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || "M");
+  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedSize, setSelectedSize] = useState("M");
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("SPECS");
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      try {
+        const res = await fetch(`/api/v1/products/${productId}`);
+        const data = await res.json();
+        if (data.success) {
+           const p = { ...data.product, id: data.product._id };
+           setProduct(p);
+           setSelectedImage(p.image);
+           setSelectedSize(p.sizes?.[0] || "M");
+           
+           const relatedRes = await fetch(`/api/v1/products`);
+           const relatedData = await relatedRes.json();
+           if (relatedData.success) {
+             const allProducts = relatedData.products.map(pr => ({ ...pr, id: pr._id }));
+             setRelatedProducts(allProducts.filter(pr => pr.id !== p.id).slice(0, 3));
+           }
+        }
+      } catch (err) {
+        console.error("Error fetching product", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProductData();
+  }, [productId]);
 
   const { isCartOpen, setCartOpen, addToCart } = useCartStore();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  const images = [
+  const images = product ? [
     product.image,
     product.hoverImage,
     "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=85",
     "https://images.unsplash.com/photo-1548883354-7622d03aca27?auto=format&fit=crop&w=1000&q=85",
-  ];
+  ].filter(Boolean) : [];
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -55,7 +84,25 @@ export default function ProductDetailPage({ params }) {
     router.push("/checkout");
   };
 
-  const relatedProducts = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 3);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">
+        <p className="font-body text-sm font-bold tracking-widest uppercase">Loading Product...</p>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col bg-surface text-on-surface">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center">
+          <p className="font-body text-sm font-bold tracking-widest uppercase">Product not found</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">

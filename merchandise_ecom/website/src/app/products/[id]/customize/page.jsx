@@ -13,9 +13,47 @@ export default function ProductCustomizePage({ params }) {
   const resolvedParams = use(params);
   const productId = resolvedParams.id;
 
-  const product = PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`/api/v1/products/${productId}`);
+        const data = await res.json();
+        if (data.success) {
+          setProduct({ ...data.product, id: data.product._id });
+        }
+      } catch (err) {
+        console.error("Error fetching product", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [productId]);
   const isCartOpen = useCartStore((state) => state.isCartOpen);
   const setCartOpen = useCartStore((state) => state.setCartOpen);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">
+        <p className="font-body text-sm font-bold tracking-widest uppercase">Loading Customizer...</p>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col bg-surface text-on-surface">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center">
+          <p className="font-body text-sm font-bold tracking-widest uppercase">Product not found</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">

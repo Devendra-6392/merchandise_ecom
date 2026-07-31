@@ -14,15 +14,53 @@ export default function ProductsPage() {
   const [sortBy, setSortBy] = useState("DEFAULT");
   const [searchQuery, setSearchQuery] = useState("");
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+  
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"]);
+  const [loading, setLoading] = useState(true);
 
   const isCartOpen = useCartStore((state) => state.isCartOpen);
   const setCartOpen = useCartStore((state) => state.setCartOpen);
   const addToCart = useCartStore((state) => state.addToCart);
 
-  const categories = ["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/v1/categories");
+        const data = await res.json();
+        if (data.success && data.categories) {
+          const dynamicCategories = data.categories.map(c => c.name.toUpperCase());
+          setCategories(["ALL", ...dynamicCategories]);
+        }
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      }
+    };
+
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/v1/products");
+        const data = await res.json();
+        if (data.success && data.products) {
+          const formattedProducts = data.products.map(p => ({
+            ...p,
+            id: p._id,
+          }));
+          setProducts(formattedProducts);
+        }
+      } catch (err) {
+        console.error("Failed to load products", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+    fetchProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
-    let list = [...PRODUCTS];
+    let list = [...products];
 
     if (selectedCategory !== "ALL") {
       list = list.filter((p) => p.category.toUpperCase() === selectedCategory);

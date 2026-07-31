@@ -8,12 +8,12 @@ const productSchema = new mongoose.Schema({
     type: String, 
     required: true,
   },
-  basePrice: { type: Number, required: true, min: 0 },
-  images: [{ type: String, required: true }],
-  availableSizes: [{ 
-    type: String, 
-    enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'One Size'] 
-  }],
+  price: { type: Number, required: true, min: 0 },
+  image: { type: String, required: true },
+  hoverImage: { type: String, required: true },
+  badge: { type: String },
+  sizes: [{ type: String }],
+  specs: [{ type: String }],
   availableColors: [{
     name: String,
     hexCode: String

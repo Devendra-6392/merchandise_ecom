@@ -80,6 +80,8 @@ export const PRODUCTS = [
 export default function CollectionsGrid({ onQuickView, onAddToCart }) {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [categories, setCategories] = useState(["ALL"]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -92,17 +94,37 @@ export default function CollectionsGrid({ onQuickView, onAddToCart }) {
         }
       } catch (err) {
         console.error("Failed to load categories", err);
-        // Fallback to initial hardcoded if it fails, or just ALL
         setCategories(["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"]);
       }
     };
+
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/v1/products");
+        const data = await res.json();
+        if (data.success && data.products) {
+          // Map _id to id for website compatibility
+          const formattedProducts = data.products.map(p => ({
+            ...p,
+            id: p._id,
+          }));
+          setProducts(formattedProducts);
+        }
+      } catch (err) {
+        console.error("Failed to load products", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchCategories();
+    fetchProducts();
   }, []);
 
   const filteredProducts =
     activeCategory === "ALL"
-      ? PRODUCTS
-      : PRODUCTS.filter((p) => p.category.toUpperCase() === activeCategory);
+      ? products
+      : products.filter((p) => p.category.toUpperCase() === activeCategory);
 
   return (
     <section id="collections" className="py-24 px-6 md:px-16 max-w-[1440px] mx-auto bg-surface">

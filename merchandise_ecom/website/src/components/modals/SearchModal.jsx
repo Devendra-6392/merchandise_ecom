@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { PRODUCTS } from "../home/CollectionsGrid";
+import { useState, useEffect } from "react";
 
 export default function SearchModal({
   isOpen,
@@ -9,17 +8,39 @@ export default function SearchModal({
   onSelectProduct,
 }) {
   const [query, setQuery] = useState("");
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    if (isOpen && products.length === 0) {
+      const fetchProducts = async () => {
+        try {
+          const res = await fetch("/api/v1/products");
+          const data = await res.json();
+          if (data.success && data.products) {
+            const formattedProducts = data.products.map(p => ({
+              ...p,
+              id: p._id,
+            }));
+            setProducts(formattedProducts);
+          }
+        } catch (err) {
+          console.error("Failed to fetch products", err);
+        }
+      };
+      fetchProducts();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const results = query.trim()
-    ? PRODUCTS.filter(
+    ? products.filter(
         (p) =>
           p.name.toLowerCase().includes(query.toLowerCase()) ||
           p.category.toLowerCase().includes(query.toLowerCase()) ||
           p.description.toLowerCase().includes(query.toLowerCase())
       )
-    : PRODUCTS.slice(0, 3);
+    : products.slice(0, 3);
 
   return (
     <div className="fixed inset-0 z-[80] flex flex-col bg-surface/98 text-on-surface backdrop-blur-md transition-all">
