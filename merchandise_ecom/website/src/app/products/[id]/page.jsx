@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
@@ -10,6 +10,30 @@ import { PRODUCTS } from "@/components/home/CollectionsGrid";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
+
+const formatProduct = (p) => {
+  const primaryImage = (p.images && p.images.length > 0 ? p.images[0] : p.image) || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80";
+  const hoverImg = p.hoverImage || (p.images && p.images.length > 1 ? p.images[1] : primaryImage);
+  const priceVal = Number(p.price ?? p.basePrice ?? 0);
+  return {
+    ...p,
+    id: p._id || p.id,
+    _id: p._id || p.id,
+    name: p.name || "Untitled Product",
+    category: p.category || "Uncategorized",
+    price: priceVal,
+    basePrice: priceVal,
+    image: primaryImage,
+    hoverImage: hoverImg,
+    badge: p.badge || (p.stockQuantity && p.stockQuantity < 10 ? "LOW STOCK" : ""),
+    sizes: p.sizes && p.sizes.length > 0 ? p.sizes : (p.availableSizes && p.availableSizes.length > 0 ? p.availableSizes : ["S", "M", "L", "XL"]),
+    specs: p.specs && p.specs.length > 0 ? p.specs : [
+      p.description || "High quality merchandise garment",
+      `Print Types: ${(p.allowedPrintTypes || ["Screen Printing"]).join(", ")}`,
+      `Stock: ${p.stockQuantity ?? 100}`,
+    ],
+  };
+};
 
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -29,19 +53,23 @@ export default function ProductDetailPage({ params }) {
     const fetchProductData = async () => {
       try {
         const res = await fetch(`/api/v1/products/${productId}`);
-        const data = await res.json();
-        if (data.success) {
-           const p = { ...data.product, id: data.product._id };
-           setProduct(p);
-           setSelectedImage(p.image);
-           setSelectedSize(p.sizes?.[0] || "M");
-           
-           const relatedRes = await fetch(`/api/v1/products`);
-           const relatedData = await relatedRes.json();
-           if (relatedData.success) {
-             const allProducts = relatedData.products.map(pr => ({ ...pr, id: pr._id }));
-             setRelatedProducts(allProducts.filter(pr => pr.id !== p.id).slice(0, 3));
-           }
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.product) {
+             const p = formatProduct(data.product);
+             setProduct(p);
+             setSelectedImage(p.image);
+             setSelectedSize(p.sizes?.[0] || "M");
+             
+             const relatedRes = await fetch(`/api/v1/products`);
+             if (relatedRes.ok) {
+               const relatedData = await relatedRes.json();
+               if (relatedData.success && relatedData.products) {
+                 const allProducts = relatedData.products.map(formatProduct);
+                 setRelatedProducts(allProducts.filter(pr => pr.id !== p.id).slice(0, 3));
+               }
+             }
+          }
         }
       } catch (err) {
         console.error("Error fetching product", err);

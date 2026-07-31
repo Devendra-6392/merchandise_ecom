@@ -15,13 +15,23 @@ export default function SearchModal({
       const fetchProducts = async () => {
         try {
           const res = await fetch("/api/v1/products");
-          const data = await res.json();
-          if (data.success && data.products) {
-            const formattedProducts = data.products.map(p => ({
-              ...p,
-              id: p._id,
-            }));
-            setProducts(formattedProducts);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.products) {
+              const formattedProducts = data.products.map(p => {
+                const primaryImage = (p.images && p.images.length > 0 ? p.images[0] : p.image) || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80";
+                const priceVal = Number(p.price ?? p.basePrice ?? 0);
+                return {
+                  ...p,
+                  id: p._id || p.id,
+                  _id: p._id || p.id,
+                  name: p.name || "Untitled Product",
+                  price: priceVal,
+                  image: primaryImage,
+                };
+              });
+              setProducts(formattedProducts);
+            }
           }
         } catch (err) {
           console.error("Failed to fetch products", err);

@@ -101,28 +101,56 @@ export default function CollectionsGrid({ onQuickView, onAddToCart }) {
     const fetchCategories = async () => {
       try {
         const res = await fetch("/api/v1/categories");
-        const data = await res.json();
-        if (data.success && data.categories) {
-          const dynamicCategories = data.categories.map(c => c.name.toUpperCase());
-          setCategories(["ALL", ...dynamicCategories]);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.categories && data.categories.length > 0) {
+            const dynamicCategories = data.categories.map(c => c.name.toUpperCase());
+            setCategories(prev => Array.from(new Set(["ALL", ...dynamicCategories])));
+          }
         }
       } catch (err) {
         console.error("Failed to load categories", err);
-        setCategories(["ALL", "OUTERWEAR", "COATS", "PANTS", "TAILORING", "TOPS"]);
       }
     };
 
     const fetchProducts = async () => {
       try {
         const res = await fetch("/api/v1/products");
-        const data = await res.json();
-        if (data.success && data.products) {
-          // Map _id to id for website compatibility
-          const formattedProducts = data.products.map(p => ({
-            ...p,
-            id: p._id,
-          }));
-          setProducts(formattedProducts);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.products) {
+            const formattedProducts = data.products.map(p => {
+              const primaryImage = (p.images && p.images.length > 0 ? p.images[0] : p.image) || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80";
+              const hoverImg = p.hoverImage || (p.images && p.images.length > 1 ? p.images[1] : primaryImage);
+              const priceVal = Number(p.price ?? p.basePrice ?? 0);
+              return {
+                ...p,
+                id: p._id || p.id,
+                _id: p._id || p.id,
+                name: p.name || "Untitled Product",
+                category: p.category || "Uncategorized",
+                price: priceVal,
+                basePrice: priceVal,
+                image: primaryImage,
+                hoverImage: hoverImg,
+                badge: p.badge || (p.stockQuantity && p.stockQuantity < 10 ? "LOW STOCK" : ""),
+                sizes: p.sizes && p.sizes.length > 0 ? p.sizes : (p.availableSizes && p.availableSizes.length > 0 ? p.availableSizes : ["S", "M", "L", "XL"]),
+                specs: p.specs && p.specs.length > 0 ? p.specs : [
+                  p.description || "High quality merchandise garment",
+                  `Print Types: ${(p.allowedPrintTypes || ["Screen Printing"]).join(", ")}`,
+                  `Stock: ${p.stockQuantity ?? 100}`,
+                ],
+              };
+            });
+            setProducts(formattedProducts);
+
+            const productCategories = Array.from(
+              new Set(formattedProducts.map(p => p.category?.toUpperCase()).filter(Boolean))
+            );
+            if (productCategories.length > 0) {
+              setCategories(prev => Array.from(new Set(["ALL", ...productCategories])));
+            }
+          }
         }
       } catch (err) {
         console.error("Failed to load products", err);

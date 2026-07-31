@@ -17,11 +17,14 @@ export const useWishlistStore = create((set, get) => ({
           Authorization: `Bearer ${token}`
         }
       });
-      const data = await res.json();
-      if (data.success && data.wishlist) {
-        // Map _id to id
-        const mapped = data.wishlist.products.map(p => ({ ...p, id: p._id }));
-        set({ items: mapped, loading: false });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.wishlist) {
+          const mapped = data.wishlist.products.map(p => ({ ...p, id: p._id }));
+          set({ items: mapped, loading: false });
+        } else {
+          set({ loading: false });
+        }
       } else {
         set({ loading: false });
       }
@@ -49,13 +52,16 @@ export const useWishlistStore = create((set, get) => ({
         },
         body: JSON.stringify({ productId: product.id })
       });
-      const data = await res.json();
-      if (!data.success) {
-        // Revert on failure
-        set({ items: prevItems });
-        return { success: false, message: data.message };
+      if (res.ok) {
+        const data = await res.json();
+        if (!data.success) {
+          set({ items: prevItems });
+          return { success: false, message: data.message };
+        }
+        return { success: true };
       }
-      return { success: true };
+      set({ items: prevItems });
+      return { success: false, message: "Failed to update wishlist" };
     } catch (error) {
       set({ items: prevItems });
       return { success: false, message: "Network error" };
@@ -76,9 +82,12 @@ export const useWishlistStore = create((set, get) => ({
           Authorization: `Bearer ${token}`
         }
       });
-      const data = await res.json();
-      if (!data.success) {
-        // Revert on failure
+      if (res.ok) {
+        const data = await res.json();
+        if (!data.success) {
+          set({ items: prevItems });
+        }
+      } else {
         set({ items: prevItems });
       }
     } catch (error) {
