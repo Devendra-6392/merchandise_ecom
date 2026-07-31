@@ -9,6 +9,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import { PRODUCTS } from "@/components/home/CollectionsGrid";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
 
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -53,6 +54,21 @@ export default function ProductDetailPage({ params }) {
 
   const { isCartOpen, setCartOpen, addToCart } = useCartStore();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const token = useAuthStore((state) => state.token);
+  const { items: wishlistItems, addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
+
+  const handleWishlistToggle = async () => {
+    if (!isAuthenticated) {
+      alert("Please sign in to manage your wishlist.");
+      router.push("/login");
+      return;
+    }
+    if (isInWishlist(product.id)) {
+      await removeFromWishlist(product.id, token);
+    } else {
+      await addToWishlist(product, token);
+    }
+  };
 
   const images = product ? [
     product.image,
@@ -259,6 +275,14 @@ export default function ProductDetailPage({ params }) {
                 className="w-full bg-inverse-surface text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-all cursor-pointer"
               >
                 BUY IT NOW & CHECKOUT
+              </button>
+
+              <button
+                onClick={handleWishlistToggle}
+                className="w-full border border-outline-variant/40 text-on-surface py-4 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-surface-container-high transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span className={`material-symbols-outlined text-lg ${product && isInWishlist(product.id) ? 'fill-current text-primary' : ''}`} style={{ fontVariationSettings: product && isInWishlist(product.id) ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
+                <span>{product && isInWishlist(product.id) ? "REMOVE FROM WISHLIST" : "SAVE TO WISHLIST"}</span>
               </button>
             </div>
 

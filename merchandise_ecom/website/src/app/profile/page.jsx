@@ -20,7 +20,11 @@ export default function ProfilePage() {
   const [profileForm, setProfileForm] = useState({
     name: "",
     phone: "",
-    address: ""
+    address: "",
+    dateOfBirth: "",
+    gender: "prefer_not_to_say",
+    clothingSize: "M",
+    bio: ""
   });
   const [saveLoading, setSaveLoading] = useState(false);
 
@@ -29,7 +33,11 @@ export default function ProfilePage() {
       setProfileForm({
         name: user.name || "",
         phone: user.phone || "",
-        address: user.address || ""
+        address: user.address || "",
+        dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : "",
+        gender: user.gender || "prefer_not_to_say",
+        clothingSize: user.clothingSize || "M",
+        bio: user.bio || ""
       });
     }
   }, [user]);
@@ -300,12 +308,62 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
+                  <label className="block text-xs font-body font-bold text-on-surface tracking-widest uppercase mb-2">DATE OF BIRTH</label>
+                  <input 
+                    type="date" 
+                    value={profileForm.dateOfBirth}
+                    onChange={(e) => setProfileForm({ ...profileForm, dateOfBirth: e.target.value })}
+                    className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-sm font-body text-on-surface focus:outline-none focus:border-primary transition-colors uppercase"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-body font-bold text-on-surface tracking-widest uppercase mb-2">GENDER</label>
+                    <select 
+                      value={profileForm.gender}
+                      onChange={(e) => setProfileForm({ ...profileForm, gender: e.target.value })}
+                      className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-sm font-body text-on-surface focus:outline-none focus:border-primary transition-colors uppercase"
+                    >
+                      <option value="prefer_not_to_say">PREFER NOT TO SAY</option>
+                      <option value="male">MALE</option>
+                      <option value="female">FEMALE</option>
+                      <option value="other">OTHER</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-body font-bold text-on-surface tracking-widest uppercase mb-2">DEFAULT CLOTHING SIZE</label>
+                    <select 
+                      value={profileForm.clothingSize}
+                      onChange={(e) => setProfileForm({ ...profileForm, clothingSize: e.target.value })}
+                      className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-sm font-body text-on-surface focus:outline-none focus:border-primary transition-colors uppercase"
+                    >
+                      <option value="XS">XS</option>
+                      <option value="S">S</option>
+                      <option value="M">M</option>
+                      <option value="L">L</option>
+                      <option value="XL">XL</option>
+                      <option value="XXL">XXL</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
                   <label className="block text-xs font-body font-bold text-on-surface tracking-widest uppercase mb-2">SHIPPING ADDRESS</label>
                   <textarea 
                     value={profileForm.address}
                     onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
-                    rows={4}
+                    rows={3}
                     className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-sm font-body text-on-surface focus:outline-none focus:border-primary transition-colors resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-body font-bold text-on-surface tracking-widest uppercase mb-2">SHORT BIO / STYLE PREFERENCE</label>
+                  <textarea 
+                    value={profileForm.bio}
+                    onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
+                    rows={2}
+                    placeholder="Tell us about your style..."
+                    className="w-full bg-surface-container-low border border-outline-variant/40 px-4 py-3 text-sm font-body text-on-surface focus:outline-none focus:border-primary transition-colors resize-none"
+                    maxLength={500}
                   />
                 </div>
                 
@@ -340,6 +398,30 @@ export default function ProfilePage() {
                 <div>
                   <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">CONTACT NUMBER</span>
                   <p className="font-body text-base text-on-surface">{user?.phone || "NOT PROVIDED"}</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">DATE OF BIRTH</span>
+                    <p className="font-body text-base text-on-surface">
+                      {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString("en-IN") : "NOT PROVIDED"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">GENDER</span>
+                    <p className="font-body text-base text-on-surface uppercase">
+                      {user?.gender ? user.gender.replace(/_/g, ' ') : "NOT PROVIDED"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">CLOTHING SIZE</span>
+                    <p className="font-body text-base text-on-surface">{user?.clothingSize || "NOT SET"}</p>
+                  </div>
+                  <div>
+                    <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">STYLE BIO</span>
+                    <p className="font-body text-base text-on-surface line-clamp-1">
+                      {user?.bio || "NOT PROVIDED"}
+                    </p>
+                  </div>
                 </div>
                 <div>
                   <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">DEFAULT SHIPPING ADDRESS</span>

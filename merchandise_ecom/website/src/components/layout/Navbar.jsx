@@ -4,11 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCartStore } from "@/store/useCartStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
 
 export default function Navbar({ onOpenSearch }) {
   const { user, isAuthenticated, logout } = useAuthStore();
   const totalCartCount = useCartStore((state) => state.getTotalCount());
   const toggleCart = useCartStore((state) => state.toggleCart);
+
+  const { items: wishlistItems, fetchWishlist } = useWishlistStore();
+  const token = useAuthStore((state) => state.token);
+
+  useEffect(() => {
+    fetchWishlist(token);
+  }, [token]);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -83,6 +91,21 @@ export default function Navbar({ onOpenSearch }) {
               >
                 search
               </button>
+            )}
+
+            {isAuthenticated && (
+              <Link
+                href="/wishlist"
+                aria-label="Wishlist"
+                className="relative flex items-center material-symbols-outlined hover:opacity-70 transition-opacity text-2xl cursor-pointer"
+              >
+                favorite
+                {wishlistItems.length > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                    {wishlistItems.length}
+                  </span>
+                )}
+              </Link>
             )}
 
             <Link

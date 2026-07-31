@@ -13,7 +13,11 @@ const userSchema = new mongoose.Schema({
     state: String,
     pincode: String,
     country: { type: String, default: 'India' }
-  }
+  },
+  dateOfBirth: { type: Date },
+  gender: { type: String, enum: ['male', 'female', 'other', 'prefer_not_to_say'] },
+  clothingSize: { type: String, enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'] },
+  bio: { type: String, trim: true, maxLength: 500 }
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {

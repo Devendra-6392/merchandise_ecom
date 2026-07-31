@@ -26,7 +26,11 @@ const sendTokenResponse = (user, statusCode, res) => {
       email: user.email,
       role: user.role,
       phone: user.phone,
-      address: user.address
+      address: user.address,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      clothingSize: user.clothingSize,
+      bio: user.bio
     }
   });
 };
@@ -103,7 +107,7 @@ export const getMe = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, phone, address } = req.body;
+    const { name, phone, address, dateOfBirth, gender, clothingSize, bio } = req.body;
     const user = await User.findById(req.user._id);
     
     if (!user) {
@@ -113,6 +117,10 @@ export const updateProfile = async (req, res, next) => {
     if (name) user.name = name;
     if (phone !== undefined) user.phone = phone;
     if (address !== undefined) user.address = address;
+    if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
+    if (gender !== undefined) user.gender = gender;
+    if (clothingSize !== undefined) user.clothingSize = clothingSize;
+    if (bio !== undefined) user.bio = bio;
 
     await user.save();
     res.json({ success: true, user });

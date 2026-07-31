@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useWishlistStore } from "../../store/useWishlistStore";
+import { useAuthStore } from "../../store/useAuthStore";
 
 export const PRODUCTS = [
   {
@@ -82,6 +84,18 @@ export default function CollectionsGrid({ onQuickView, onAddToCart }) {
   const [categories, setCategories] = useState(["ALL"]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { items: wishlistItems, addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
+  const token = useAuthStore((state) => state.token);
+
+  const handleWishlistToggle = async (e, product) => {
+    e.stopPropagation();
+    if (isInWishlist(product.id)) {
+      await removeFromWishlist(product.id, token);
+    } else {
+      await addToWishlist(product, token);
+    }
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -172,6 +186,16 @@ export default function CollectionsGrid({ onQuickView, onAddToCart }) {
                   {product.badge}
                 </div>
               )}
+
+              {/* Wishlist Heart */}
+              <button
+                onClick={(e) => handleWishlistToggle(e, product)}
+                className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full hover:bg-white hover:scale-110 transition-all shadow-sm group/heart cursor-pointer"
+              >
+                <span className={`material-symbols-outlined text-xl transition-colors ${isInWishlist(product.id) ? 'fill-current text-primary' : 'text-on-surface-variant group-hover/heart:text-primary'}`} style={{ fontVariationSettings: isInWishlist(product.id) ? "'FILL' 1" : "'FILL' 0" }}>
+                  favorite
+                </span>
+              </button>
 
               {/* Main Image */}
               <img

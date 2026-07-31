@@ -17,6 +17,7 @@ import shippingRoutes from './routes/shippingRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import wishlistRoutes from './routes/wishlistRoutes.js';
 import { v2 as cloudinary } from 'cloudinary';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -67,6 +68,7 @@ app.use('/api/v1/shipping', shippingRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/upload', uploadRoutes);
+app.use('/api/v1/wishlist', wishlistRoutes);
 
 // Error Handling Middleware
 app.use(notFound);
