@@ -18,6 +18,8 @@ const ORDER_STATUSES = [
   "Cancelled"
 ];
 
+import InvoiceModal from "../../../website/src/components/invoice/InvoiceModal";
+
 export default function OrderDetails() {
   const { id } = useParams();
   const { token } = useAuth();
@@ -26,6 +28,7 @@ export default function OrderDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
 
   const fetchOrder = async () => {
     setLoading(true);
@@ -96,14 +99,47 @@ export default function OrderDetails() {
   const currentIndex = ORDER_STATUSES.indexOf(order.currentStatus);
   const nextStatus = currentIndex >= 0 && currentIndex < ORDER_STATUSES.length - 2 ? ORDER_STATUSES[currentIndex + 1] : null;
 
+  const isDelivered = (order.currentStatus || "").toLowerCase() === "delivered";
+
   return (
     <>
-      <PageMeta title={`Order ${order.orderNumber} | MerchStudio`} description="Order details and management" />
+      <PageMeta title={`Order ${order.orderNumber} | Virasat Atelier Admin`} description="Order details and management" />
       <PageBreadcrumb pageTitle={`Order ${order.orderNumber}`} />
+
+      <InvoiceModal
+        isOpen={invoiceOpen}
+        onClose={() => setInvoiceOpen(false)}
+        order={order}
+      />
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Left Column: Details & Items */}
         <div className="xl:col-span-2 space-y-6">
+          
+          {/* Tax Invoice Release Banner Card */}
+          <div className={`rounded-2xl border p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xs ${isDelivered ? "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900" : "bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-900"}`}>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md ${isDelivered ? "bg-emerald-600 text-white" : "bg-blue-600 text-white"}`}>
+                  {isDelivered ? "INVOICE RELEASED" : "ORDER RECEIPT"}
+                </span>
+                <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  {isDelivered ? "Official Tax Invoice Unlocked" : "Order Confirmation Stage"}
+                </span>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                {isDelivered
+                  ? "Order has been marked DELIVERED. Customer and admin can now view & print the Official GST Tax Invoice."
+                  : "When admin updates status to 'Delivered', the Official GST Tax Invoice is automatically unlocked for the customer."}
+              </p>
+            </div>
+            <button
+              onClick={() => setInvoiceOpen(true)}
+              className="px-5 py-2.5 bg-gray-900 hover:bg-black text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-sm cursor-pointer shrink-0"
+            >
+              {isDelivered ? "View / Print Tax Invoice" : "View Order Receipt"}
+            </button>
+          </div>
           
           {/* Items Table */}
           <div className="bg-white rounded-2xl border border-gray-200 dark:border-gray-800 dark:bg-gray-900 overflow-hidden shadow-xs p-6">

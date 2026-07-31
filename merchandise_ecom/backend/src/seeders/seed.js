@@ -35,20 +35,20 @@ const sampleUsers = [
     role: 'customer',
     phone: '+91 9123456789',
     address: {
-      street: 'Flat 402, Orangered Residency, Bandra West',
-      city: 'Mumbai',
-      state: 'Maharashtra',
-      pincode: '400050',
-      country: 'India'
-    }
+    street: 'Flat 402, Virasat Residency, Bandra West',
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    pincode: '400050',
+    country: 'India'
+  }
   }
 ];
 
 const sampleProducts = [
   {
-    name: 'ORANGERED OVERSIZED MONOLITH HOODIE',
+    name: 'VIRASAT OVERSIZED MONOLITH HOODIE',
     sku: 'HOODIE-MONO-001',
-    description: 'Architectural boxy hoodie crafted from 500 GSM custom-knit French Terry cotton. Features distressed double-layer hood and minimal Orangered tonal embroidery.',
+    description: 'Architectural boxy hoodie crafted from 500 GSM custom-knit French Terry cotton. Features distressed double-layer hood and minimal Virasat tonal embroidery.',
     category: 'Outerwear',
     price: 2499,
     basePrice: 2499,
@@ -69,9 +69,9 @@ const sampleProducts = [
     stockQuantity: 45
   },
   {
-    name: 'ARCHIVAL TRENCH COAT / ORANGERED ACCENT',
+    name: 'ARCHIVAL TRENCH COAT / VIRASAT ACCENT',
     sku: 'COAT-TRN-002',
-    description: 'Double-breasted trench coat with structured shoulder pads and Orangered silk satin interior lining. Features storm flap and custom engraved horn buttons.',
+    description: 'Double-breasted trench coat with structured shoulder pads and Virasat silk satin interior lining. Features storm flap and custom engraved horn buttons.',
     category: 'Coats',
     price: 5999,
     basePrice: 5999,
@@ -83,7 +83,7 @@ const sampleProducts = [
     ],
     badge: 'RUNWAY EXCLUSIVE',
     sizes: ['M', 'L', 'XL'],
-    specs: ['Water-Resistant Premium Twill', 'Orangered Silk Satin Lining', 'Belted Waist with Steel Buckle', 'Dry Clean Only'],
+    specs: ['Water-Resistant Premium Twill', 'Virasat Silk Satin Lining', 'Belted Waist with Steel Buckle', 'Dry Clean Only'],
     availableColors: [
       { name: 'Beige Twill', hexCode: '#F5F5DC' },
       { name: 'Charcoal Black', hexCode: '#1A1A1A' }
@@ -94,7 +94,7 @@ const sampleProducts = [
   {
     name: 'RAW DENIM SELVEDGE CARGO TROUSERS',
     sku: 'PANTS-DEN-003',
-    description: '14oz selvedge denim pant with wide-leg profile, articulated cargo pockets, and Orangered contrast topstitching.',
+    description: '14oz selvedge denim pant with wide-leg profile, articulated cargo pockets, and Virasat contrast topstitching.',
     category: 'Pants',
     price: 3299,
     basePrice: 3299,
@@ -117,7 +117,7 @@ const sampleProducts = [
   {
     name: 'DECONSTRUCTED FLIGHT BOMBER JACKET',
     sku: 'BOMB-FLGT-004',
-    description: 'Heavy nylon MA-1 flight jacket with asymmetrical Orangered utility straps, custom ribbing, and thermal insulation.',
+    description: 'Heavy nylon MA-1 flight jacket with asymmetrical Virasat utility straps, custom ribbing, and thermal insulation.',
     category: 'Outerwear',
     price: 4999,
     basePrice: 4999,
@@ -140,7 +140,7 @@ const sampleProducts = [
   {
     name: 'TAILORED EDITORIAL BLAZER / CHARCOAL',
     sku: 'BLZR-TLR-005',
-    description: 'Single-button peak-lapel blazer in deep charcoal virgin wool with high-waist darting and Orangered interior piping.',
+    description: 'Single-button peak-lapel blazer in deep charcoal virgin wool with high-waist darting and Virasat interior piping.',
     category: 'Tailoring',
     price: 4499,
     basePrice: 4499,
@@ -185,7 +185,7 @@ const sampleProducts = [
   {
     name: 'SIGNATURE MONOGRAM HEAVYWEIGHT TEE',
     sku: 'TEE-MONO-007',
-    description: 'Boxy fit short sleeve t-shirt cut from 300 GSM combed jersey with high-density Orangered studio chest print.',
+    description: 'Boxy fit short sleeve t-shirt cut from 300 GSM combed jersey with high-density Virasat studio chest print.',
     category: 'Tops',
     price: 1299,
     basePrice: 1299,

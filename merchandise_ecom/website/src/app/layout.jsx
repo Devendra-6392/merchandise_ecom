@@ -2,11 +2,13 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata = {
-  title: "ORANGERED STUDIO | High-Fashion Merchandise & Luxury Lookbook",
+  title: "VIRASAT ATELIER | High-Fashion Indian Heritage & Luxury Merchandise",
   description:
-    "Minimalist Editorial with High-Contrast accents. Discover luxury streetwear, capsule collections, limited runs, and modern fashion curation.",
+    "Minimalist Editorial with High-Contrast accents. Discover luxury streetwear, heritage capsule collections, limited runs, and modern fashion curation.",
   keywords: [
-    "Orangered Studio",
+    "Virasat Atelier",
+    "Virasat Studio",
+    "Virasat",
     "High Fashion",
     "Streetwear",
     "Luxury Apparel",

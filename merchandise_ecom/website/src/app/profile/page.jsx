@@ -28,12 +28,22 @@ export default function ProfilePage() {
   });
   const [saveLoading, setSaveLoading] = useState(false);
 
+  const formatAddress = (addr) => {
+    if (!addr) return "";
+    if (typeof addr === "string") return addr;
+    if (typeof addr === "object") {
+      const parts = [addr.street, addr.city, addr.state, addr.pincode, addr.country].filter(Boolean);
+      return parts.join(", ");
+    }
+    return String(addr);
+  };
+
   useEffect(() => {
     if (user) {
       setProfileForm({
         name: user.name || "",
         phone: user.phone || "",
-        address: user.address || "",
+        address: formatAddress(user.address),
         dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : "",
         gender: user.gender || "prefer_not_to_say",
         clothingSize: user.clothingSize || "M",
@@ -426,7 +436,7 @@ export default function ProfilePage() {
                 <div>
                   <span className="block text-xs font-body text-on-surface-variant uppercase mb-1">DEFAULT SHIPPING ADDRESS</span>
                   <p className="font-body text-base text-on-surface leading-relaxed max-w-md">
-                    {user?.address || "NO ADDRESS SAVED"}
+                    {formatAddress(user?.address) || "NO ADDRESS SAVED"}
                   </p>
                 </div>
               </div>

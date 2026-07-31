@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Order, ORDER_STATUSES } from '../models/Order.js';
 import { Cart } from '../models/Cart.js';
 import { Product } from '../models/Product.js';
+import { User } from '../models/User.js';
 import { sendEmail } from '../utils/sendEmail.js';
 
 export const createOrder = async (req, res, next) => {
@@ -31,7 +32,7 @@ export const createOrder = async (req, res, next) => {
         };
       });
     } else {
-      const cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
+      const cart = await Cart.findOne({ user: req.user?._id }).populate('items.product');
       if (cart && cart.items.length > 0) {
         cart.calculateTotals();
         orderItems = cart.items.map(item => ({
@@ -66,9 +67,9 @@ export const createOrder = async (req, res, next) => {
     const discountAmount = bodyBilling?.discountAmount !== undefined ? Number(bodyBilling.discountAmount) : 0;
     const grandTotal = bodyBilling?.grandTotal !== undefined ? Number(bodyBilling.grandTotal) : (subtotal + taxAmount + shippingCharge - discountAmount);
 
+    const customerEmail = shippingAddress?.email || req.user?.email || 'customer@example.com';
     let customerId = req.user ? req.user._id : null;
     if (!customerId) {
-      const customerEmail = shippingAddress?.email || 'customer@example.com';
       let existingCust = await User.findOne({ email: customerEmail });
       if (!existingCust) {
         existingCust = await User.findOne({ role: 'customer' });
@@ -84,19 +85,29 @@ export const createOrder = async (req, res, next) => {
       customerId = existingCust._id;
     }
 
+    const extractStr = (val, fallback) => {
+      if (!val) return fallback;
+      if (typeof val === 'string') return val;
+      if (typeof val === 'object') return val.street || val.address || val.name || fallback;
+      return String(val);
+    };
+
+    const rawAddr = shippingAddress || req.user?.address || {};
+    const normalizedShipping = {
+      name: extractStr(rawAddr.name, req.user?.name || 'Devendra Yadav'),
+      phone: extractStr(rawAddr.phone, req.user?.phone || '+91 98765 43210'),
+      street: extractStr(rawAddr.street, 'Flat 402, Virasat Residency, Bandra West'),
+      city: extractStr(rawAddr.city, 'Mumbai'),
+      state: extractStr(rawAddr.state, 'Maharashtra'),
+      pincode: extractStr(rawAddr.pincode || rawAddr.zip, '400050'),
+      country: extractStr(rawAddr.country, 'India')
+    };
+
     const order = await Order.create({
       orderNumber,
       customer: customerId,
       items: orderItems,
-      shippingAddress: shippingAddress || req.user?.address || {
-        name: 'Devendra Yadav',
-        phone: '+91 98765 43210',
-        street: 'Bandra Kurla Complex',
-        city: 'Mumbai',
-        state: 'Maharashtra',
-        pincode: '400051',
-        country: 'India'
-      },
+      shippingAddress: normalizedShipping,
       billingSummary: {
         subtotal,
         taxAmount,
@@ -125,12 +136,12 @@ export const createOrder = async (req, res, next) => {
         <p>Thank you for your order! Your order <strong>${orderNumber}</strong> has been successfully placed.</p>
         <p><strong>Total Amount:</strong> ₹${order.billingSummary.grandTotal}</p>
         <p>We will notify you when your order is processed.</p>
-        <p>Best regards,<br>MerchStudio Team</p>
+        <p>Best regards,<br>Virasat Atelier Team</p>
       `;
 
-      if (req.user?.email || customerEmail) {
+      if (customerEmail) {
         await sendEmail({
-          to: req.user?.email || customerEmail,
+          to: customerEmail,
           subject: `Order Confirmation - ${orderNumber}`,
           html: emailHtml,
         });

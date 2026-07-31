@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import InvoiceModal from "@/components/invoice/InvoiceModal";
 import { useOrderStore } from "@/store/useOrderStore";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -11,6 +12,7 @@ export default function OrderHistoryPage() {
   const { orders, fetchMyOrders, loading } = useOrderStore();
   const { isAuthenticated } = useAuthStore();
   const [filterStatus, setFilterStatus] = useState("ALL");
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState(null);
 
   useEffect(() => {
     fetchMyOrders();
@@ -24,6 +26,12 @@ export default function OrderHistoryPage() {
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">
       <Navbar />
+
+      <InvoiceModal
+        isOpen={!!selectedInvoiceOrder}
+        onClose={() => setSelectedInvoiceOrder(null)}
+        order={selectedInvoiceOrder}
+      />
 
       {/* Header Banner */}
       <section className="bg-inverse-surface text-white py-12 px-6 md:px-16 border-b border-white/10">
@@ -158,12 +166,21 @@ export default function OrderHistoryPage() {
                     DESTINATION: {order.shippingAddress?.city || "Mumbai"}, {order.shippingAddress?.country || "India"}
                   </div>
 
-                  <Link
-                    href={`/orders/${order.orderNumber}`}
-                    className="w-full sm:w-auto bg-primary text-white px-8 py-3.5 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all text-center shadow-md cursor-pointer"
-                  >
-                    TRACK 10-STAGE TIMELINE LIVE →
-                  </Link>
+                  <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <button
+                      onClick={() => setSelectedInvoiceOrder(order)}
+                      className="w-full sm:w-auto border border-outline hover:bg-surface-container-high px-5 py-3 font-body text-xs font-bold tracking-widest uppercase transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-sm">receipt_long</span>
+                      {(order.currentStatus || "").toLowerCase() === "delivered" ? "VIEW TAX INVOICE" : "VIEW RECEIPT"}
+                    </button>
+                    <Link
+                      href={`/orders/${order.orderNumber}`}
+                      className="w-full sm:w-auto bg-primary text-white px-8 py-3 font-body text-xs font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all text-center shadow-md cursor-pointer"
+                    >
+                      TRACK LIVE →
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}

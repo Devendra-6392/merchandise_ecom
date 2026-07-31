@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useOrderStore } from "@/store/useOrderStore";
+import InvoiceModal from "@/components/invoice/InvoiceModal";
 import Lottie from "lottie-react";
 
 export default function CheckoutPage() {
@@ -33,11 +34,11 @@ export default function CheckoutPage() {
     firstName: user?.name ? user.name.split(" ")[0] : "DEVENDRA",
     lastName: user?.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : "YADAV",
     email: user?.email || "devendra.yadav@example.com",
-    address: user?.address || "Flat 402, Orangered Residency, Bandra West",
-    city: "Mumbai",
-    state: "Maharashtra",
-    country: "India",
-    zip: "400050",
+    address: typeof user?.address === "object" ? (user.address?.street || "Flat 402, Orangered Residency, Bandra West") : (user?.address || "Flat 402, Orangered Residency, Bandra West"),
+    city: typeof user?.address === "object" ? (user.address?.city || "Mumbai") : "Mumbai",
+    state: typeof user?.address === "object" ? (user.address?.state || "Maharashtra") : "Maharashtra",
+    country: typeof user?.address === "object" ? (user.address?.country || "India") : "India",
+    zip: typeof user?.address === "object" ? (user.address?.pincode || user.address?.zip || "400050") : "400050",
     upiId: "devendra@okaxis",
     cardNumber: "•••• •••• •••• 4242",
     expDate: "12/28",
@@ -58,12 +59,14 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
 
+    const streetStr = typeof formData.address === "object" ? (formData.address?.street || "Flat 402, Orangered Residency, Bandra West") : String(formData.address || "Flat 402, Orangered Residency, Bandra West");
+
     const orderData = {
       paymentMethod,
       shippingAddress: {
         name: `${formData.firstName} ${formData.lastName}`.trim(),
         phone: user?.phone || "+91 98765 43210",
-        street: formData.address,
+        street: streetStr,
         city: formData.city,
         state: formData.state,
         country: formData.country,
@@ -138,7 +141,7 @@ export default function CheckoutPage() {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock_key",
             amount: rzpData.paymentOrder.amount,
             currency: "INR",
-            name: "Orangered Studio",
+            name: "VIRASAT ATELIER",
             description: "Checkout Payment",
             order_id: rzpData.paymentOrder.id,
             handler: async function (response) {
@@ -194,21 +197,70 @@ export default function CheckoutPage() {
     setIsSubmitting(false);
   };
 
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const { currentOrder } = useOrderStore();
+
   if (orderSuccess) {
+    const activeOrder = currentOrder || {
+      orderNumber: createdOrderNumber || "ORD-89241",
+      currentStatus: "OrderPlaced",
+      shippingAddress: {
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        phone: user?.phone || "+91 98765 43210",
+        street: typeof formData.address === "object" ? (formData.address?.street || "Flat 402, Virasat Residency, Bandra West") : String(formData.address || "Flat 402, Virasat Residency, Bandra West"),
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
+        pincode: formData.zip,
+      },
+      billingSummary: {
+        subtotal,
+        taxAmount: Math.round(subtotal * 0.18),
+        shippingCharge: shipping,
+        discountAmount,
+        grandTotal,
+      },
+      items,
+      paymentDetails: { gateway: paymentMethod, status: "Pending" },
+    };
+
     return (
       <div className="min-h-screen flex flex-col bg-surface text-on-surface">
         <Navbar />
+
+        <InvoiceModal
+          isOpen={invoiceOpen}
+          onClose={() => setInvoiceOpen(false)}
+          order={activeOrder}
+        />
+
         <main className="flex-grow flex items-center justify-center py-24 text-center px-6">
-          <div className="space-y-6 max-w-md bg-surface-container-lowest p-8 border border-primary/30 rounded-2xl shadow-2xl">
-            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto">
-              <span className="material-symbols-outlined text-4xl">check_circle</span>
+          <div className="space-y-6 max-w-lg bg-surface-container-lowest p-8 md:p-10 border border-primary/40 shadow-2xl">
+            <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto">
+              <span className="material-symbols-outlined text-5xl">check_circle</span>
             </div>
-            <h1 className="font-display text-3xl font-bold text-on-surface">ORDER CONFIRMED!</h1>
+            <span className="text-xs font-body tracking-[0.25em] text-primary font-bold uppercase block">
+              VIRASAT ATELIER ORDER DISPATCH
+            </span>
+            <h1 className="font-display text-3xl font-bold text-on-surface">ORDER SUCCESSFULLY PLACED!</h1>
             <p className="font-body text-xs text-on-surface-variant uppercase tracking-wider">
-              YOUR MERCHANDISE ORDER HAS BEEN PLACED & SAVED IN DATABASE.
+              ORDER <span className="font-mono font-bold text-primary">{createdOrderNumber || "CONFIRMED"}</span> IS SAVED & PROCESSING FOR PRINT FLOOR DISPATCH.
             </p>
-            <div className="pt-2 text-xs font-semibold text-primary animate-pulse tracking-widest uppercase">
-              REDIRECTING TO ORDER TRACKING...
+
+            <div className="flex flex-col gap-3 pt-4 border-t border-outline-variant/30">
+              <button
+                onClick={() => setInvoiceOpen(true)}
+                className="bg-primary text-white px-6 py-3.5 font-body text-xs font-bold uppercase tracking-widest hover:bg-primary-container transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+              >
+                <span className="material-symbols-outlined text-base">receipt_long</span>
+                VIEW ORDER CONFIRMATION RECEIPT
+              </button>
+              <Link
+                href={`/orders/${createdOrderNumber || "latest"}`}
+                className="border border-outline text-on-surface hover:bg-surface-container-high px-6 py-3.5 font-body text-xs font-bold uppercase tracking-widest transition-all"
+              >
+                LIVE 10-STAGE ORDER TRACKING →
+              </Link>
             </div>
           </div>
         </main>

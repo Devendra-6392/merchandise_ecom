@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import InvoiceModal from "@/components/invoice/InvoiceModal";
 import { useOrderStore } from "@/store/useOrderStore";
 
 const STAGES = [
@@ -28,6 +29,7 @@ export default function OrderTrackingPage({ params }) {
   const { fetchOrderById, currentOrder, cancelOrder } = useOrderStore();
   const [cancelling, setCancelling] = useState(false);
   const [cancelMessage, setCancelMessage] = useState("");
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
 
   useEffect(() => {
     fetchOrderById(orderId);
@@ -36,7 +38,7 @@ export default function OrderTrackingPage({ params }) {
   const order = currentOrder || {
     orderNumber: orderId,
     currentStatus: "PaymentVerified",
-    shippingAddress: { name: "DEVENDRA YADAV", street: "Flat 402, Orangered Residency, Bandra West", city: "Mumbai", state: "Maharashtra", country: "India", pincode: "400050" },
+    shippingAddress: { name: "DEVENDRA YADAV", street: "Flat 402, Virasat Residency, Bandra West", city: "Mumbai", state: "Maharashtra", country: "India", pincode: "400050" },
     billingSummary: { grandTotal: 6149 },
     items: [],
     timeline: [],
@@ -44,6 +46,7 @@ export default function OrderTrackingPage({ params }) {
 
   const currentStageIndex = STAGES.findIndex((s) => s.key === order.currentStatus);
   const isCancelled = order.currentStatus === "Cancelled";
+  const isDelivered = (order.currentStatus || "").toLowerCase() === "delivered";
   const canCancel = CANCELLABLE_STATES.includes(order.currentStatus) && !isCancelled;
 
   const handleCancelOrder = async () => {
@@ -61,6 +64,12 @@ export default function OrderTrackingPage({ params }) {
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">
       <Navbar />
 
+      <InvoiceModal
+        isOpen={invoiceOpen}
+        onClose={() => setInvoiceOpen(false)}
+        order={order}
+      />
+
       {/* Header */}
       <section className="bg-inverse-surface text-white py-12 px-6 md:px-16 border-b border-white/10">
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
@@ -75,12 +84,21 @@ export default function OrderTrackingPage({ params }) {
               WAYBILL NO: {order.shippingDetails?.trackingNumber || "DEL-9948201-IN"} | COURIER: {order.shippingDetails?.courierName || "DELHIVERY EXPRESS"}
             </p>
           </div>
-          <Link
-            href="/orders"
-            className="font-body text-xs font-bold text-primary-fixed hover:underline uppercase tracking-widest"
-          >
-            ← BACK TO ALL ORDERS
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setInvoiceOpen(true)}
+              className="bg-primary hover:bg-primary-container text-white px-5 py-2.5 font-body text-xs font-bold uppercase tracking-widest transition-all cursor-pointer shadow-lg flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-base">receipt_long</span>
+              {isDelivered ? "VIEW OFFICIAL TAX INVOICE" : "VIEW ORDER RECEIPT"}
+            </button>
+            <Link
+              href="/orders"
+              className="font-body text-xs font-bold text-primary-fixed hover:underline uppercase tracking-widest"
+            >
+              ← ALL ORDERS
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -91,6 +109,29 @@ export default function OrderTrackingPage({ params }) {
             ✓ {cancelMessage}
           </div>
         )}
+
+        {/* Invoice Release Status Banner */}
+        <div className={`p-6 border flex flex-col sm:flex-row justify-between items-center gap-4 ${isDelivered ? "bg-emerald-950/40 text-emerald-200 border-emerald-500/50" : "bg-surface-container-lowest text-on-surface border-outline-variant/30"}`}>
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <span className="material-symbols-outlined text-2xl">{isDelivered ? "verified" : "info"}</span>
+              <h3 className="font-display font-bold text-lg uppercase tracking-tight">
+                {isDelivered ? "OFFICIAL TAX INVOICE RELEASED & AUTHORIZED" : "ORDER CONFIRMATION RECEIPT READY"}
+              </h3>
+            </div>
+            <p className="font-body text-xs opacity-80 uppercase tracking-wider">
+              {isDelivered
+                ? "This order has been marked DELIVERED by admin. The official GST Tax Invoice is unlocked and ready to download/print."
+                : "Tax Invoice unlocks automatically when admin updates status to DELIVERED. You can view your Order Confirmation Receipt now."}
+            </p>
+          </div>
+          <button
+            onClick={() => setInvoiceOpen(true)}
+            className={`px-6 py-3 font-body text-xs font-bold uppercase tracking-widest transition-all cursor-pointer shrink-0 ${isDelivered ? "bg-emerald-500 text-black hover:bg-emerald-400" : "bg-primary text-white hover:bg-primary-container"}`}
+          >
+            {isDelivered ? "DOWNLOAD / PRINT TAX INVOICE" : "PRINT ORDER RECEIPT"}
+          </button>
+        </div>
 
         {/* 10-Stage Sequential Order Lifecycle Tracker */}
         <div className="bg-surface-container-lowest p-6 md:p-8 border border-outline-variant/30 space-y-8 shadow-sm">
@@ -220,7 +261,11 @@ export default function OrderTrackingPage({ params }) {
               <div>
                 <span className="font-bold text-on-surface block mb-1">DISPATCH ADDRESS</span>
                 <span>
-                  {order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.state || "Maharashtra"}, {order.shippingAddress?.pincode}, {order.shippingAddress?.country || "India"}
+                  {typeof order.shippingAddress === "string"
+                    ? order.shippingAddress
+                    : order.shippingAddress
+                    ? [order.shippingAddress.street, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.pincode, order.shippingAddress.country].filter(Boolean).join(", ")
+                    : "NO DISPATCH ADDRESS DETAILS"}
                 </span>
               </div>
 

@@ -9,7 +9,7 @@ export default function Footer() {
         {/* Brand Column */}
         <div className="lg:col-span-2 space-y-4">
           <Link href="/" className="font-display text-3xl font-bold tracking-tighter text-primary inline-block">
-            ORANGERED STUDIO
+            VIRASAT ATELIER
           </Link>
           <p className="font-body text-xs text-white/70 font-light max-w-sm leading-relaxed">
             Minimalist Editorial with High-Contrast accents. Engineering monuments in luxury streetwear and architectural fashion curation.
@@ -119,7 +119,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="max-w-[1440px] mx-auto border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center text-[11px] font-body text-white/50 tracking-wider uppercase gap-4">
-        <span>© {new Date().getFullYear()} ORANGERED STUDIO. ALL RIGHTS RESERVED.</span>
+        <span>© {new Date().getFullYear()} VIRASAT ATELIER. ALL RIGHTS RESERVED.</span>
         <div className="flex space-x-6">
           <a href="#" className="hover:text-white transition-colors">
             PRIVACY POLICY

@@ -166,5 +166,5 @@ export const useAuthStore = create(
       storage: createJSONStorage(() => (typeof window !== "undefined" ? window.localStorage : undefined)),
       partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
     }
-  );
+  )
 );

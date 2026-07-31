@@ -42,7 +42,7 @@ export default function EditorialSection() {
                 CURATED IN MUMBAI, FORGED IN BENGALURU
               </h3>
               <p className="font-body text-sm text-white/70 leading-relaxed font-light">
-                Orangered Studio rejects mass production in favor of architectural precision. Each piece is crafted in limited batches of 250 individually numbered garments, using custom-milled Indian organic cotton and heavyweight French Terry.
+                Virasat Atelier rejects mass production in favor of architectural precision. Each piece is crafted in limited batches of 250 individually numbered garments, using custom-milled Indian organic cotton and heavyweight French Terry.
               </p>
             </div>
 
@@ -88,7 +88,7 @@ export default function EditorialSection() {
             <span className="material-symbols-outlined text-primary text-3xl">local_shipping</span>
             <h4 className="font-display text-xl font-bold text-white">EXPRESS WORLDWIDE DISPATCH</h4>
             <p className="font-body text-xs text-white/60 leading-relaxed">
-              Insured courier delivery worldwide in custom Orangered matte black magnetic presentation packaging.
+              Insured courier delivery worldwide in custom Virasat matte black magnetic presentation packaging.
             </p>
           </div>
         </div>

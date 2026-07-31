@@ -49,7 +49,7 @@ export default function Navbar({ onOpenSearch }) {
               href="/"
               className="font-display text-2xl md:text-3xl font-bold tracking-tighter text-primary hover:opacity-90 transition-opacity"
             >
-              ORANGERED STUDIO
+              VIRASAT ATELIER
             </Link>
           </div>
 
@@ -154,7 +154,7 @@ export default function Navbar({ onOpenSearch }) {
         <div className="fixed inset-0 z-[60] flex flex-col p-6 bg-inverse-surface text-inverse-on-surface transition-all duration-300">
           <div className="flex justify-between items-center mb-10">
             <span className="font-display text-2xl font-bold text-primary-fixed tracking-tight">
-              ORANGERED
+              VIRASAT
             </span>
             <button
               className="text-primary-fixed material-symbols-outlined text-3xl cursor-pointer"
@@ -236,7 +236,7 @@ export default function Navbar({ onOpenSearch }) {
               </Link>
             )}
             <p className="text-white/40 text-[11px] font-body tracking-wider pt-2">
-              © ORANGERED STUDIO. ALL RIGHTS RESERVED.
+              © VIRASAT ATELIER. ALL RIGHTS RESERVED.
             </p>
           </div>
         </div>

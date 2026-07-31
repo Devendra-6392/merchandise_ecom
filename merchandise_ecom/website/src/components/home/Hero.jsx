@@ -7,7 +7,7 @@ export default function Hero({ onExploreClick }) {
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=2400&q=85"
-          alt="Orangered Studio High Fashion Editorial"
+          alt="Virasat Atelier High Fashion Editorial"
           className="w-full h-full object-cover opacity-40 ken-burns"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface via-transparent to-inverse-surface/60" />
@@ -24,7 +24,7 @@ export default function Hero({ onExploreClick }) {
         {/* Central Editorial Typography */}
         <div className="my-auto py-12 max-w-4xl">
           <p className="font-body text-xs md:text-sm font-bold tracking-[0.25em] text-primary-fixed mb-4 uppercase">
-            ORANGERED HIGH-FASHION LOOKBOOK
+            VIRASAT ATELIER HIGH-FASHION LOOKBOOK
           </p>
           <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight leading-[0.95] text-white mb-6">
             CURATED <br />
