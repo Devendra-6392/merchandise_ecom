@@ -36,7 +36,7 @@ export default function OrderTrackingPage({ params }) {
   const order = currentOrder || {
     orderNumber: orderId,
     currentStatus: "PaymentVerified",
-    shippingAddress: { name: "DEVENDRA BHATT", street: "Flat 402, Orangered Residency, Bandra West", city: "Mumbai", state: "Maharashtra", country: "India", pincode: "400050" },
+    shippingAddress: { name: "DEVENDRA YADAV", street: "Flat 402, Orangered Residency, Bandra West", city: "Mumbai", state: "Maharashtra", country: "India", pincode: "400050" },
     billingSummary: { grandTotal: 6149 },
     items: [],
     timeline: [],
@@ -214,7 +214,7 @@ export default function OrderTrackingPage({ params }) {
 
               <div>
                 <span className="font-bold text-on-surface block mb-1">RECIPIENT</span>
-                <span>{order.shippingAddress?.name || "DEVENDRA BHATT"}</span>
+                <span>{order.shippingAddress?.name || "DEVENDRA YADAV"}</span>
               </div>
 
               <div>

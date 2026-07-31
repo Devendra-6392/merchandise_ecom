@@ -17,7 +17,7 @@ const INITIAL_MOCK_ORDERS = [
       grandTotal: 6149,
     },
     shippingAddress: {
-      name: "DEVENDRA BHATT",
+      name: "DEVENDRA YADAV",
       phone: "+91 98765 43210",
       street: "Flat 402, Orangered Residency, Bandra West",
       city: "Mumbai",

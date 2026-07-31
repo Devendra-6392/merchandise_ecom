@@ -102,16 +102,16 @@ export default function Footer() {
           </h3>
           <div className="space-y-3 font-body text-xs text-white/70">
             <div>
-              <span className="block text-white font-bold">MILAN</span>
-              <span className="text-[11px]">Via Montenapoleone 18</span>
+              <span className="block text-white font-bold">MUMBAI</span>
+              <span className="text-[11px]">Bandra Kurla Complex, Bandra East, Mumbai 400051</span>
             </div>
             <div>
-              <span className="block text-white font-bold">TOKYO</span>
-              <span className="text-[11px]">5-7-2 Minamiaoyama, Minato-ku</span>
+              <span className="block text-white font-bold">DELHI NCR</span>
+              <span className="text-[11px]">Cyber City, DLF Phase 2, Gurugram 122002</span>
             </div>
             <div>
-              <span className="block text-white font-bold">PARIS</span>
-              <span className="text-[11px]">243 Rue Saint-Honoré</span>
+              <span className="block text-white font-bold">BENGALURU</span>
+              <span className="text-[11px]">100 Feet Road, Indiranagar, Bengaluru 560038</span>
             </div>
           </div>
         </div>

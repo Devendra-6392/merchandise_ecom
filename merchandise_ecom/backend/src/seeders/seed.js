@@ -15,7 +15,7 @@ import { Order } from '../models/Order.js';
 
 const sampleUsers = [
   {
-    name: 'Admin Manager',
+    name: 'Devendra Yadav (Admin)',
     email: 'admin@merchandise.com',
     password: 'adminpassword123',
     role: 'admin',
@@ -29,16 +29,16 @@ const sampleUsers = [
     }
   },
   {
-    name: 'John Doe',
+    name: 'Devendra Yadav',
     email: 'customer@example.com',
     password: 'customerpassword123',
     role: 'customer',
     phone: '+91 9123456789',
     address: {
-      street: '45 Park View Apartments, MG Road',
-      city: 'Bengaluru',
-      state: 'Karnataka',
-      pincode: '560001',
+      street: 'Flat 402, Orangered Residency, Bandra West',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      pincode: '400050',
       country: 'India'
     }
   }

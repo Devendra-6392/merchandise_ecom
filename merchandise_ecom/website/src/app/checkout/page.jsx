@@ -31,8 +31,8 @@ export default function CheckoutPage() {
 
   const [formData, setFormData] = useState({
     firstName: user?.name ? user.name.split(" ")[0] : "DEVENDRA",
-    lastName: user?.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : "BHATT",
-    email: user?.email || "devendra@example.com",
+    lastName: user?.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : "YADAV",
+    email: user?.email || "devendra.yadav@example.com",
     address: user?.address || "Flat 402, Orangered Residency, Bandra West",
     city: "Mumbai",
     state: "Maharashtra",

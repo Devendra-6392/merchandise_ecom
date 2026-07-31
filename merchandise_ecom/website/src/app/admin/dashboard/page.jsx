@@ -268,7 +268,7 @@ export default function AdminDashboardPage() {
                 {orders.slice(0, 5).map((order) => (
                   <tr key={order._id || order.orderNumber} className="hover:bg-surface-container-low transition-colors">
                     <td className="py-4 px-4 font-display font-bold text-sm text-on-surface">{order.orderNumber}</td>
-                    <td className="py-4 px-4 font-bold text-on-surface-variant uppercase">{order.shippingAddress?.name || "DEVENDRA BHATT"}</td>
+                    <td className="py-4 px-4 font-bold text-on-surface-variant uppercase">{order.shippingAddress?.name || "DEVENDRA YADAV"}</td>
                     <td className="py-4 px-4 text-on-surface-variant">
                       {new Date(order.createdAt || Date.now()).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}
                     </td>

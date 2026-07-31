@@ -26,7 +26,7 @@ export default function EditorialSection() {
               />
               <div className="absolute bottom-6 left-6 right-6 bg-inverse-surface/90 backdrop-blur-md p-6 border border-white/10">
                 <span className="font-body text-[10px] font-bold tracking-widest text-primary-fixed block uppercase mb-1">
-                  LOOKBOOK NO. 14 — SHOWN IN MILAN
+                  LOOKBOOK NO. 14 — SHOWN IN MUMBAI
                 </span>
                 <p className="font-display text-lg font-bold text-white">
                   "WE DO NOT DESIGN FOR PASSING SEASONS; WE DESIGN MONUMENTS IN TEXTILE."
@@ -39,10 +39,10 @@ export default function EditorialSection() {
           <div className="lg:col-span-5 flex flex-col justify-center space-y-8">
             <div className="border-l-2 border-primary pl-6">
               <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-4">
-                CURATED IN MILAN, FORGED IN TOKYO
+                CURATED IN MUMBAI, FORGED IN BENGALURU
               </h3>
               <p className="font-body text-sm text-white/70 leading-relaxed font-light">
-                Orangered Studio rejects mass production in favor of architectural precision. Each piece is crafted in limited batches of 250 individually numbered garments, using custom-milled Japanese selvedge denim and heavyweight Italian French Terry.
+                Orangered Studio rejects mass production in favor of architectural precision. Each piece is crafted in limited batches of 250 individually numbered garments, using custom-milled Indian organic cotton and heavyweight French Terry.
               </p>
             </div>
 
