@@ -25,7 +25,7 @@ const navSections = [
                 icon: <TaskIcon />,
                 name: "Orders & Approvals",
                 subItems: [
-                    { name: "All Orders", path: "/basic-tables" },
+                    { name: "All Orders", path: "/orders" },
                     { name: "Artwork Approvals", path: "/blank", new: true },
                 ],
             },
