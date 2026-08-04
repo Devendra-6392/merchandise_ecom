@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
       }
 
       try {
-        const res = await fetch("/api/v1/auth/me", {
+        const res = await fetch(`https://turf.localhostt.live/api/v1/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     setError(null);
     try {
-      const res = await fetch("/api/v1/auth/login", {
+      const res = await fetch(`https://turf.localhostt.live/api/v1/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +76,7 @@ export function AuthProvider({ children }) {
   const signup = async (userData) => {
     setError(null);
     try {
-      const res = await fetch("/api/v1/auth/register", {
+      const res = await fetch(`https://turf.localhostt.live/api/v1/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -34,7 +34,7 @@ export default function OrderDetails() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/v1/orders/${id}`, {
+      const res = await fetch(`https://turf.localhostt.live/api/v1/orders/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -60,7 +60,7 @@ export default function OrderDetails() {
     
     setUpdating(true);
     try {
-      const res = await fetch(`/api/v1/orders/${id}/status`, {
+      const res = await fetch(`https://turf.localhostt.live/api/v1/orders/${id}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

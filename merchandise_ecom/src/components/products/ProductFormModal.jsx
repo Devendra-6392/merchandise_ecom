@@ -103,8 +103,8 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product = nu
     setLoading(true);
     try {
       const url = product
-        ? `/api/v1/products/${product._id}`
-        : "/api/v1/products";
+        ? `https://turf.localhostt.live/api/v1/products/${product._id}`
+        : `https://turf.localhostt.live/api/v1/products`;
       const method = product ? "PUT" : "POST";
 
       const res = await fetch(url, {

@@ -17,7 +17,7 @@ export default function CategoryList() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/v1/categories");
+      const res = await fetch(`https://turf.localhostt.live/api/v1/categories`);
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.message || "Failed to fetch categories");
@@ -40,7 +40,7 @@ export default function CategoryList() {
 
     setAdding(true);
     try {
-      const res = await fetch("/api/v1/categories", {
+      const res = await fetch(`https://turf.localhostt.live/api/v1/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export default function CategoryList() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this category?")) return;
     try {
-      const res = await fetch(`/api/v1/categories/${id}`, {
+      const res = await fetch(`https://turf.localhostt.live/api/v1/categories/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`

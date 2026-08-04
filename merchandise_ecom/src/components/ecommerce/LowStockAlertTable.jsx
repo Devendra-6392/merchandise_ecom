@@ -31,7 +31,7 @@ export default function LowStockAlertTable() {
   const [products, setProducts] = useState(DEFAULT_LOW_STOCK);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/v1/admin/dashboard/stats")
+    fetch(`https://turf.localhostt.live/api/v1/admin/dashboard/stats`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.lowStockProducts?.length) {
