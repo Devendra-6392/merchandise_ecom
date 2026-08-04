@@ -42,8 +42,19 @@ connectDB();
 // Middleware Setup
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN,
+  process.env.WEBSITE_ORIGIN
+];
+
 app.use(cors({
-  origin: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -58,6 +69,37 @@ app.get('/', (req, res) => {
     message: 'Custom Merchandise E-Commerce & Order Management API',
     version: '1.0.0',
     documentation: '/PROJECT_SPECIFICATION_AND_WORKFLOW.md'
+  });
+});
+
+// API root route for proxy requests to /api
+app.get('/api', (req, res) => {
+  res.json({
+    status: 'online',
+    message: 'API root is available. Use /api/v1/... for backend endpoints.',
+    version: '1.0.0',
+    routes: '/api/v1'
+  });
+});
+
+// API root route for /api/v1
+app.get('/api/v1', (req, res) => {
+  res.json({
+    status: 'online',
+    message: 'API v1 root is available. Use /api/v1/<resource> to access backend endpoints.',
+    version: '1.0.0',
+    available: [
+      '/api/v1/auth',
+      '/api/v1/products',
+      '/api/v1/cart',
+      '/api/v1/orders',
+      '/api/v1/payments',
+      '/api/v1/shipping',
+      '/api/v1/admin',
+      '/api/v1/categories',
+      '/api/v1/upload',
+      '/api/v1/wishlist'
+    ]
   });
 });
 
