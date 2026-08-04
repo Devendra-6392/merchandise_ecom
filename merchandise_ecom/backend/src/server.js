@@ -43,13 +43,19 @@ connectDB();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN,
-  process.env.WEBSITE_ORIGIN
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://virasat-anqmlp2lk-devendrabhattsqaure-7149s-projects.vercel.app'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // allow any vercel deployment (wildcard logic) or exact matches
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
