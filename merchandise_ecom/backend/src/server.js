@@ -30,11 +30,19 @@ dotenv.config();
 const app = express();
 
 // Configure Cloudinary
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+const cloudApiKey = process.env.CLOUDINARY_API_KEY?.trim();
+const cloudApiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
+
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: cloudName,
+  api_key: cloudApiKey,
+  api_secret: cloudApiSecret,
 });
+
+if (!cloudName || !cloudApiKey || !cloudApiSecret || cloudName.includes('your_') || cloudApiKey.includes('your_') || cloudApiSecret.includes('your_')) {
+  console.warn('⚠️ Cloudinary is not fully configured. Image upload requests will fail until CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET are set with valid credentials.');
+}
 
 // Connect to MongoDB Database
 connectDB();

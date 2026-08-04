@@ -4,6 +4,8 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import { useAuth } from "../../context/AuthContext";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://turf.localhostt.live/api";
+const API_V1_BASE_URL = API_BASE_URL.endsWith('/v1') ? API_BASE_URL : `${API_BASE_URL}/v1`;
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
 const ALL_PRINT_TYPES = ["Screen Printing", "DTF Printing", "Sublimation", "Embroidery", "UV Printing"];
 
@@ -34,7 +36,7 @@ export default function AddProduct() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`https://turf.localhostt.live/api/v1/categories`);
+        const res = await fetch(`${API_V1_BASE_URL}/categories`);
         const data = await res.json();
         if (data.success && data.categories.length > 0) {
           setCategories(data.categories);
@@ -76,7 +78,7 @@ export default function AddProduct() {
       // Upload main image
       const formData1 = new FormData();
       formData1.append("image", imageFile);
-      const uploadRes1 = await fetch(`https://turf.localhostt.live/api/v1/upload`, {
+      const uploadRes1 = await fetch(`${API_BASE_URL}/v1/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData1,
@@ -87,7 +89,7 @@ export default function AddProduct() {
       // Upload hover image
       const formData2 = new FormData();
       formData2.append("image", hoverImageFile);
-      const uploadRes2 = await fetch(`https://turf.localhostt.live/api/v1/upload`, {
+      const uploadRes2 = await fetch(`${API_BASE_URL}/v1/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData2,
@@ -110,7 +112,7 @@ export default function AddProduct() {
         allowedPrintTypes,
       };
 
-      const res = await fetch(`https://turf.localhostt.live/api/v1/products`, {
+      const res = await fetch(`${API_BASE_URL}/v1/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
