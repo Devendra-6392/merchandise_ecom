@@ -1,224 +1,93 @@
-# Custom Merchandise E-Commerce & Order Management Platform
+# Merch Studio - Complete E-commerce Solution
 
-A full-stack MERN (MongoDB, Express, React, Node.js) web application for custom merchandise business where customers can browse, customize products, place orders, complete payments, and track order lifecycles from purchase to delivery. Includes an Admin operations & workflow panel.
+Welcome to Merch Studio! This repository contains the complete stack for your E-commerce platform, including a robust backend API, a Next.js storefront, and a React Admin Panel.
 
-> 📖 **Full Architectural & Workflow Specification**: See [`PROJECT_SPECIFICATION_AND_WORKFLOW.md`](./PROJECT_SPECIFICATION_AND_WORKFLOW.md) for complete database schemas, state machine rules, API specifications, sequence diagrams, and evaluation criteria breakdowns.
+## Project Structure
 
----
+This repository is organized into three main directories:
 
-## ⚡ Quick Start & Setup Guide
-
-### 1. Prerequisites
-- Node.js (v18.x or later)
-- MongoDB Server (Local or Atlas)
-- npm or yarn
-
-### 2. Environment Setup
-Create `.env` files for backend and frontend:
-
-#### Backend `.env`
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/merchandise_ecom
-JWT_SECRET=your_jwt_secret_key_here
-JWT_EXPIRE=7d
-RAZORPAY_KEY_ID=your_razorpay_key
-RAZORPAY_KEY_SECRET=your_razorpay_secret
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-SHIPROCKET_EMAIL=your_shiprocket_email
-SHIPROCKET_PASSWORD=your_shiprocket_password
-```
-
-#### Frontend `.env`
-```env
-VITE_API_BASE_URL=http://localhost:5000/api/v1
-VITE_RAZORPAY_KEY_ID=your_razorpay_key
-```
+1. **`backend/`**: Node.js & Express API connected to MongoDB.
+2. **`website/`**: Next.js React storefront for customers.
+3. **Root Directory**: Vite React Admin Panel for managing products, orders, and users.
 
 ---
 
+## Prerequisites
 
+Before you begin, ensure you have the following installed on your machine:
+- **Node.js** (v18 or higher recommended)
+- **npm** (comes with Node.js)
+- **MongoDB** (Local instance or MongoDB Atlas URI)
 
-- [✨ Visit Website](https://tailadmin.com)
-- [📄 Documentation](https://tailadmin.com/docs)
-- [⬇️ Download](https://tailadmin.com/download)
-- [🖌️ Figma Design File (Community Edition)](https://www.figma.com/community/file/1214477970819985778)
-- [⚡ Get PRO Version](https://tailadmin.com/pricing)
+---
 
-### Demos
+## Step 1: Setting up the Backend
 
-- [Free Version](https://free-react-demo.tailadmin.com/)
-- [Pro Version](https://react-demo.tailadmin.com)
+The backend is responsible for all database operations, authentication, and payments.
 
-### Other Versions
-
-- [HTML Version](https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template)
-- [Next.js Version](https://github.com/TailAdmin/free-nextjs-admin-dashboard)
-- [Vue.js Version](https://github.com/TailAdmin/vue-tailwind-admin-dashboard)
-- [Angular Version](https://github.com/TailAdmin/free-angular-tailwind-dashboard)
-- [Laravel Version](https://github.com/TailAdmin/tailadmin-laravel)
-
-## Installation
-
-### Prerequisites
-
-To get started with TailAdmin, ensure you have the following prerequisites installed and set up:
-
-- Node.js 18.x or later (recommended to use Node.js 20.x or later)
-
-### Cloning the Repository
-
-Clone the repository using the following command:
-
-```bash
-git clone https://github.com/TailAdmin/free-react-tailwind-admin-dashboard.git
-```
-
-> Windows Users: place the repository near the root of your drive if you face issues while cloning.
-
-1. Install dependencies:
-
+1. Open a terminal and navigate to the backend folder:
+   ```bash
+   cd backend
+   ```
+2. Install the required dependencies:
    ```bash
    npm install
-   # or
-   yarn install
    ```
-
-2. Start the development server:
+3. Ensure your `.env` file is properly configured. You should have a `.env` file in the `backend/` folder with variables like your `MONGODB_URI`, `JWT_SECRET`, and `PORT` (usually `5000`).
+4. Start the backend server:
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
+   *(The server should now be running on `http://localhost:5000`)*
 
-## Components
+---
 
-TailAdmin is a pre-designed starting point for building a web-based dashboard using React.js and Tailwind CSS. The
-template includes:
+## Step 2: Setting up the Admin Panel
 
-- Sophisticated and accessible sidebar
-- Data visualization components
-- Prebuilt profile management and 404 page
-- Tables and Charts(Line and Bar)
-- Authentication forms and input elements
-- Alerts, Dropdowns, Modals, Buttons and more
-- FAQ & Accordion, Testimonials, and Carousels
-- Can't forget Dark Mode 🕶️
+The Admin panel is a Vite-powered React application located in the root of the project.
 
-All components are built with React and styled using Tailwind CSS for easy customization.
+1. Open a **new** terminal and navigate to the root directory (if not already there):
+   ```bash
+   cd merchandise_ecom
+   ```
+2. Install the required dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+   *(The admin panel should now be accessible at `http://localhost:5173`)*
 
-## Feature Comparison
+---
 
-### Free Version
+## Step 3: Setting up the Storefront Website
 
-- 1 Unique Dashboard
-- 35+ dashboard components
-- 50+ UI elements
-- Basic Figma design files
-- Community support
+The customer-facing website is a Next.js application located in the `website/` folder.
 
-### Pro Version
+1. Open a **new** terminal and navigate to the website folder:
+   ```bash
+   cd website
+   ```
+2. Install the required dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Next.js development server:
+   ```bash
+   npm run dev
+   ```
+   *(The storefront should now be accessible at `http://localhost:3000`)*
 
-- 7 Unique Dashboards: Analytics, Ecommerce, Marketing, CRM, SaaS, Stocks, Logistics (more coming soon)
-- 500+ dashboard components and UI elements
-- Complete Figma design file
-- Email support
+---
 
-To learn more about pro version features and pricing, visit our [pricing page](https://tailadmin.com/pricing).
+## Deployment (Vercel & Render)
 
-## Changelog
+**Frontend Deployment (Vercel):**
+Both the Admin Panel (Root) and the Website (`website/`) can be seamlessly deployed on Vercel. 
+- During Vercel setup, point the **Root Directory** to the root for the Admin Panel, or `website/` for the storefront.
+- Make sure to add your environment variables (`NEXT_PUBLIC_API_URL` and `VITE_API_URL`) directly in the Vercel dashboard.
 
-### Version 2.3.0 - [April 28, 2026]
-- Added **AI Dashboard** with token usage and revenue tracking.
-- Added **Sales Dashboard** with retention and multi-channel analytics.
-- Added **Finance Dashboard** with cashflow and balance management.
-- Introduced **6 New Layout variations** for improved UI flexibility.
-- Integrated **Advanced Data Visualization** with 7+ new chart types.
-
-### Version 2.1.0 - [Dec 30, 2025]
-
-- Resolved Date Picker positioning and input issues in Charts.
-
-### Version 2.0.2 - [March 25, 2025]
-
-- Upgraded to React 19
-- Included overrides for packages to prevent peer dependency errors.
-- Migrated from react-flatpickr to flatpickr package for React 19 support
-
-### Version 2.0.1 - [February 27, 2025]
-
-#### Update Overview
-
-- Upgraded to Tailwind CSS v4 for better performance and efficiency.
-- Updated class usage to match the latest syntax and features.
-- Replaced deprecated class and optimized styles.
-
-#### Next Steps
-
-- Run npm install or yarn install to update dependencies.
-- Check for any style changes or compatibility issues.
-- Refer to the Tailwind CSS v4 [Migration Guide](https://tailwindcss.com/docs/upgrade-guide) on this release. if needed.
-- This update keeps the project up to date with the latest Tailwind improvements. 🚀
-
-### Version 2.0.0 - [February 2025]
-
-A major update with comprehensive redesign and modern React patterns implementation.
-
-#### Major Improvements
-
-- Complete UI redesign with modern React patterns
-- New features: collapsible sidebar, chat, and calendar
-- Improved performance and accessibility
-- Updated data visualization using ApexCharts
-
-#### Key Features
-
-- Redesigned dashboards (Ecommerce, Analytics, Marketing, CRM)
-- Enhanced navigation with React Router integration
-- Advanced tables with sorting and filtering
-- Calendar with drag-and-drop support
-- New UI components and improved existing ones
-
-#### Breaking Changes
-
-- Updated sidebar component API
-- Migrated charts to ApexCharts
-- Revised authentication system
-
-[Read more](https://tailadmin.com/docs/update-logs/react) on this release.
-
-### Version 1.3.7 - [June 20, 2024]
-
-#### Enhancements
-
-1. Remove Repetition of DefaultLayout in every Pages
-2. Add ClickOutside Component for reduce repeated functionality in Header Message, Notification and User Dropdowns.
-
-### Version 1.3.6 - [Jan 31, 2024]
-
-#### Enhancements
-
-1. Integrate flatpickr in [Date Picker/Form Elements]
-2. Change color after select an option [Select Element/Form Elements].
-3. Make it functional [Multiselect Dropdown/Form Elements].
-4. Make best value editable [Pricing Table One/Pricing Table].
-5. Rearrange Folder structure.
-
-### Version 1.2.0 - [Apr 28, 2023]
-
-- Add Typescript in TailAdmin React.
-
-### Version 1.0.0 - Initial Release - [Mar 13, 2023]
-
-- Initial release of TailAdmin React.
-
-## License
-
-TailAdmin React.js Free Version is released under the MIT License.
-
-## Support
-
-If you find this project helpful, please consider giving it a star on GitHub. Your support helps us continue developing
-and maintaining this template.
+**Backend Deployment (Render/Railway):**
+You can deploy your `backend/` directory as a Web Service on platforms like Render or Railway. After deploying, update your frontend environment variables to point to the live backend URL.
