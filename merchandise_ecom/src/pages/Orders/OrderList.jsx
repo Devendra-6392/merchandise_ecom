@@ -17,7 +17,7 @@ export default function OrderList() {
     setLoading(true);
     setError(null);
     try {
-      let url = "/api/v1/admin/orders";
+      let url = `https://turf.localhostt.live/api/v1/admin/orders`;
       if (statusFilter) url += `?status=${encodeURIComponent(statusFilter)}`;
 
       const res = await fetch(url, {

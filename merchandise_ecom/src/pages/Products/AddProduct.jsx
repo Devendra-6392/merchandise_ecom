@@ -34,7 +34,7 @@ export default function AddProduct() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("/api/v1/categories");
+        const res = await fetch(`https://turf.localhostt.live/api/v1/categories`);
         const data = await res.json();
         if (data.success && data.categories.length > 0) {
           setCategories(data.categories);
@@ -76,7 +76,7 @@ export default function AddProduct() {
       // Upload main image
       const formData1 = new FormData();
       formData1.append("image", imageFile);
-      const uploadRes1 = await fetch("/api/v1/upload", {
+      const uploadRes1 = await fetch(`https://turf.localhostt.live/api/v1/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData1,
@@ -87,7 +87,7 @@ export default function AddProduct() {
       // Upload hover image
       const formData2 = new FormData();
       formData2.append("image", hoverImageFile);
-      const uploadRes2 = await fetch("/api/v1/upload", {
+      const uploadRes2 = await fetch(`https://turf.localhostt.live/api/v1/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData2,
@@ -110,7 +110,7 @@ export default function AddProduct() {
         allowedPrintTypes,
       };
 
-      const res = await fetch("/api/v1/products", {
+      const res = await fetch(`https://turf.localhostt.live/api/v1/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

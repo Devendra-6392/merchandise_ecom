@@ -21,7 +21,7 @@ export default function ProductListTable() {
     setLoading(true);
     setError(null);
     try {
-      let url = "/api/v1/products?";
+      let url = `https://turf.localhostt.live/api/v1/products?`;
       if (categoryFilter) url += `category=${encodeURIComponent(categoryFilter)}&`;
       if (search) url += `search=${encodeURIComponent(search)}&`;
 
@@ -63,7 +63,7 @@ export default function ProductListTable() {
     }
 
     try {
-      const res = await fetch(`/api/v1/products/${id}`, {
+      const res = await fetch(`https://turf.localhostt.live/api/v1/products/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
