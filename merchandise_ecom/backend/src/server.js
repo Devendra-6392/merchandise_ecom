@@ -54,6 +54,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',
+  'https://virasat-seven.vercel.app',
+  'https://turf.localhostt.live',
   'https://virasat-anqmlp2lk-devendrabhattsqaure-7149s-projects.vercel.app'
 ];
 
@@ -61,12 +63,14 @@ app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
+    const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+
     // allow any vercel deployment (wildcard logic) or exact matches
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+    if (allowedOrigins.includes(normalizedOrigin) || normalizedOrigin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true
