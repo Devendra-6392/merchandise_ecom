@@ -28,6 +28,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("RAZORPAY");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [createdOrderNumber, setCreatedOrderNumber] = useState("");
   const token = useAuthStore((state) => state.token);
 
   const [formData, setFormData] = useState({
@@ -99,6 +100,7 @@ export default function CheckoutPage() {
     const res = await createOrder(orderData);
 
     if (res.success && res.order) {
+      setCreatedOrderNumber(res.order.orderNumber);
       if (paymentMethod === "COD") {
         clearCart();
         setOrderSuccess(true);
