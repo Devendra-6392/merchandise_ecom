@@ -164,7 +164,7 @@ export default function CheckoutPage() {
             description: "Checkout Payment",
             order_id: rzpData.paymentOrder.id,
             handler: async function (response) {
-              const verifyRes = await fetch("/api/v1/payments/verify", {
+              // Fixed: Removed duplicate line
               const verifyRes = await fetch("/api/v1/payments/verify", {
                 method: "POST",
                 headers: {
