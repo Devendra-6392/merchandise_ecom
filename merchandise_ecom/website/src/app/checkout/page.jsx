@@ -157,7 +157,7 @@ export default function CheckoutPage() {
           if (!rzpData.success) throw new Error("Failed to create Razorpay order");
 
           const options = {
-            key: razorpayKey,
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TGQiUKzQNg3tGH",
             amount: rzpData.paymentOrder.amount,
             currency: "INR",
             name: "VIRASAT ATELIER",

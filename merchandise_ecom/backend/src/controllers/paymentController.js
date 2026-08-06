@@ -12,8 +12,8 @@ export const createPaymentOrder = async (req, res, next) => {
     }
 
     const razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_mock_key',
-      key_secret: process.env.RAZORPAY_KEY_SECRET || 'rzp_test_mock_secret',
+      key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_TGQiUKzQNg3tGH',
+      key_secret: process.env.RAZORPAY_KEY_SECRET || 'zsbWw6gd4v0uDMt79vMc47sz',
     });
 
     const options = {
@@ -53,7 +53,7 @@ export const verifyPayment = async (req, res, next) => {
     let isSuccess = false;
 
     if (status !== 'Failed' && razorpay_signature) {
-      const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_mock_secret';
+      const secret = process.env.RAZORPAY_KEY_SECRET || 'zsbWw6gd4v0uDMt79vMc47sz';
       const hmac = crypto.createHmac('sha256', secret);
       hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
       const generated_signature = hmac.digest('hex');
