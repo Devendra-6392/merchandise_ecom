@@ -119,7 +119,7 @@ export default function CheckoutPage() {
               document.body.appendChild(script);
             });
           };
-          
+
           const scriptLoaded = await loadScript();
           if (!scriptLoaded) {
             alert("Razorpay SDK failed to load");
@@ -152,7 +152,7 @@ export default function CheckoutPage() {
             },
             body: JSON.stringify({ orderId: res.order._id })
           });
-          
+
           const rzpData = await rzpRes.json();
           if (!rzpData.success) throw new Error("Failed to create Razorpay order");
 
@@ -164,6 +164,7 @@ export default function CheckoutPage() {
             description: "Checkout Payment",
             order_id: rzpData.paymentOrder.id,
             handler: async function (response) {
+              const verifyRes = await fetch("/api/v1/payments/verify", {
               const verifyRes = await fetch("/api/v1/payments/verify", {
                 method: "POST",
                 headers: {
@@ -179,7 +180,7 @@ export default function CheckoutPage() {
                 })
               });
               const verifyData = await verifyRes.json();
-              
+
               if (verifyData.success) {
                 clearCart();
                 setOrderSuccess(true);
@@ -197,10 +198,10 @@ export default function CheckoutPage() {
             },
             theme: { color: "#FF4500" }
           };
-          
+
           const rzp = new window.Razorpay(options);
           rzp.on('payment.failed', function (response) {
-             alert(response.error.description);
+            alert(response.error.description);
           });
           rzp.open();
 
@@ -212,7 +213,7 @@ export default function CheckoutPage() {
     } else {
       alert("Failed to create order. Please try again.");
     }
-    
+
     setIsSubmitting(false);
   };
 
@@ -331,7 +332,7 @@ export default function CheckoutPage() {
 
       {/* Checkout Content */}
       <main className="py-12 px-6 md:px-16 max-w-[1440px] mx-auto w-full flex-grow relative">
-        
+
         <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Form Steps */}
           <div className="lg:col-span-7 space-y-10">
@@ -439,18 +440,16 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("RAZORPAY")}
-                  className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "RAZORPAY" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
-                  }`}
+                  className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${paymentMethod === "RAZORPAY" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
+                    }`}
                 >
                   SECURE ONLINE PAYMENT (RAZORPAY)
                 </button>
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("COD")}
-                  className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${
-                    paymentMethod === "COD" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
-                  }`}
+                  className={`p-3 border font-body text-xs font-bold tracking-wider uppercase cursor-pointer ${paymentMethod === "COD" ? "border-primary bg-primary text-white" : "border-outline-variant/40 bg-surface-container-low"
+                    }`}
                 >
                   CASH ON DELIVERY (COD)
                 </button>
@@ -525,9 +524,8 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 shadow-lg cursor-pointer flex items-center justify-center gap-2 ${
-                isSubmitting ? "opacity-75 cursor-not-allowed" : "hover:bg-primary-container"
-              }`}
+              className={`w-full bg-primary text-white py-4 font-body text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 shadow-lg cursor-pointer flex items-center justify-center gap-2 ${isSubmitting ? "opacity-75 cursor-not-allowed" : "hover:bg-primary-container"
+                }`}
             >
               {isSubmitting ? (
                 <>
