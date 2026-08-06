@@ -31,6 +31,16 @@ export const createPaymentOrder = async (req, res, next) => {
   }
 };
 
+export const getPaymentConfig = async (req, res, next) => {
+  try {
+    const razorpayKeyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_mock_key';
+    res.json({ success: true, razorpayKeyId });
+  } catch (error) {
+    console.error("Payment config error:", error);
+    next(error);
+  }
+};
+
 export const verifyPayment = async (req, res, next) => {
   try {
     const { orderId, paymentId, transactionId, status, razorpay_signature, razorpay_order_id, razorpay_payment_id } = req.body;

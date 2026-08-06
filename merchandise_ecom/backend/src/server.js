@@ -23,9 +23,8 @@ import { v2 as cloudinary } from 'cloudinary';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load .env relative to file location (backend/.env) as well as CWD
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-dotenv.config();
+// Load .env relative to file location (backend/.env) and override any blank process environment values
+dotenv.config({ path: path.resolve(__dirname, '../.env'), override: true });
 
 const app = express();
 

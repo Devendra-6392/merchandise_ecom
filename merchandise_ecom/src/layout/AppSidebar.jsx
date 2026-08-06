@@ -54,24 +54,24 @@ const navSections = [
                     { name: "Category Charts", path: "/bar-chart" },
                 ],
             },
-            {
-                icon: <TableIcon />,
-                name: "Data Tables",
-                path: "/basic-tables",
-            },
+            // {
+            //     icon: <TableIcon />,
+            //     name: "Data Tables",
+            //     path: "/basic-tables",
+            // },
         ],
     },
-    {
-        id: "account",
-        title: "Account",
-        items: [
-            {
-                icon: <UserCircleIcon />,
-                name: "User Profile",
-                path: "/profile",
-            },
-        ],
-    },
+    // {
+    //     id: "account",
+    //     title: "Account",
+    //     items: [
+    //         {
+    //             icon: <UserCircleIcon />,
+    //             name: "User Profile",
+    //             path: "/profile",
+    //         },
+    //     ],
+    // },
 ];
 const AppSidebar = () => {
     const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();

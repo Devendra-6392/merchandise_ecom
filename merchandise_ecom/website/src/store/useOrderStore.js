@@ -186,7 +186,7 @@ export const useOrderStore = create(
           currentOrder: newOrder,
           loading: false,
         }));
-        return { success: true, order: newOrder };
+        return { success: true, order: newOrder, fallback: true };
       },
 
       cancelOrder: async (orderIdOrNumber) => {

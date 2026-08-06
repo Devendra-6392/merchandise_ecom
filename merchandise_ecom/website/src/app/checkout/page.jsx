@@ -127,7 +127,24 @@ export default function CheckoutPage() {
             return;
           }
 
-          const rzpRes = await fetch("/api/v1/payment/create-order", {
+          if (!res.order || !res.order._id) {
+            alert("Failed to initialize payment. Please try again.");
+            setIsSubmitting(false);
+            return;
+          }
+
+          const fetchRazorpayKey = async () => {
+            try {
+              const configRes = await fetch('/api/v1/payments/config');
+              const configData = await configRes.json();
+              return configData?.razorpayKeyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mock_key';
+            } catch (_) {
+              return process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mock_key';
+            }
+          };
+
+          const razorpayKey = await fetchRazorpayKey();
+          const rzpRes = await fetch("/api/v1/payments/create-order", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -140,14 +157,14 @@ export default function CheckoutPage() {
           if (!rzpData.success) throw new Error("Failed to create Razorpay order");
 
           const options = {
-            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock_key",
+            key: razorpayKey,
             amount: rzpData.paymentOrder.amount,
             currency: "INR",
             name: "VIRASAT ATELIER",
             description: "Checkout Payment",
             order_id: rzpData.paymentOrder.id,
             handler: async function (response) {
-              const verifyRes = await fetch("/api/v1/payment/verify", {
+              const verifyRes = await fetch("/api/v1/payments/verify", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
